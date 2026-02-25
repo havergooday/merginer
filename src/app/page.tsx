@@ -1,14 +1,14 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 
 import { CharacterStats } from "@/components/CharacterStats";
 import { ExplorePanel } from "@/components/ExplorePanel";
+import { ExploreProgressModal } from "@/components/ExploreProgressModal";
 import { ForgePanel } from "@/components/ForgePanel";
 import { InnPanel } from "@/components/InnPanel";
 import { InventoryPanel } from "@/components/InventoryPanel";
 import { MaterialInventoryPanel } from "@/components/MaterialInventoryPanel";
-import { type ExploreResult, simulateExplore } from "@/domain/explore";
 import { validateForge } from "@/domain/forge";
 import {
   canUpgradeForge,
@@ -19,6 +19,7 @@ import {
 import { reducer } from "@/domain/reducer";
 import { calcAttackFromEquipped, calcMaxHpFromEquippedArmor } from "@/domain/selectors";
 import { createInitialGameState, type Floor } from "@/domain/state";
+import { useExploreProgress } from "@/hooks/useExploreProgress";
 import { useForgeSlots } from "@/hooks/useForgeSlots";
 import { formatAsMmSs, useRestCountdown } from "@/hooks/useRestCountdown";
 import { loadState, saveState } from "@/lib/storage";
@@ -57,18 +58,8 @@ const formatMaterialCost = (plus: number): string => {
   return parts.length > 0 ? parts.join(" + ") : "추가 재료 없음";
 };
 
-const getExploreEndReasonText = (result: ExploreResult): string => {
-  if (result.endReason === "DEFEATED") {
-    return `HP가 0이 되어 ${result.clearedStage}단계에서 탐험이 종료되었습니다.`;
-  }
-  return "1-10까지 모두 클리어하고 마을로 복귀했습니다.";
-};
-
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
-  const [exploreResult, setExploreResult] = useState<ExploreResult | null>(null);
-  const [visibleLogCount, setVisibleLogCount] = useState(0);
-  const [isExploreResultReady, setIsExploreResultReady] = useState(false);
 
   useEffect(() => {
     saveState(state);
@@ -117,33 +108,6 @@ export default function Home() {
     [state.equippedWeaponItemId, state.equipmentItems],
   );
 
-  useEffect(() => {
-    if (!state.isExploring || !exploreResult) {
-      return;
-    }
-
-    const totalSteps = exploreResult.logs.length;
-    if (totalSteps === 0) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      setVisibleLogCount((prev) => {
-        const next = prev + 1;
-        if (next >= totalSteps) {
-          window.clearInterval(timer);
-          setIsExploreResultReady(true);
-          return totalSteps;
-        }
-        return next;
-      });
-    }, 100);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [state.isExploring, exploreResult]);
-
   const craftCost = useMemo(() => getCraftCost(state.forgeLevel), [state.forgeLevel]);
   const canUpgradeForgeNow = useMemo(
     () => canUpgradeForge(state.forgeLevel) && state.materials.ironOre >= state.forgeUpgradeCost,
@@ -164,6 +128,14 @@ export default function Home() {
 
   const canUseRestNow = currentHp < maxHp && !state.isExploring;
   const { isResting, restRemainingSec, triggerRest } = useRestCountdown(dispatch, canUseRestNow);
+  const { session: exploreSession, startExplore, confirmExplore } = useExploreProgress({
+    currentFloor: state.currentFloor,
+    currentHp,
+    attack,
+    isExploring: state.isExploring,
+    isResting,
+    dispatch,
+  });
 
   const handleDragStart = (itemId: string) => (event: React.DragEvent<HTMLButtonElement>) => {
     event.dataTransfer.setData("text/plain", itemId);
@@ -181,47 +153,6 @@ export default function Home() {
       materialItemId: forgeValidation.material.id,
     });
     forgeSlots.clearSlots();
-  };
-
-  const handleExploreStart = () => {
-    if (state.isExploring || currentHp <= 0 || isResting) {
-      return;
-    }
-
-    const result = simulateExplore({
-      floor: state.currentFloor,
-      hp: currentHp,
-      attack,
-    });
-
-    setExploreResult(result);
-    setVisibleLogCount(0);
-    setIsExploreResultReady(result.logs.length === 0);
-    dispatch({ type: "START_EXPLORE" });
-  };
-
-  const visibleLogs = exploreResult ? exploreResult.logs.slice(0, visibleLogCount) : [];
-  const latestLog = visibleLogs[visibleLogs.length - 1];
-  const popupCurrentHp = latestLog ? latestLog.hpAfter : currentHp;
-  const popupCurrentStage = latestLog ? latestLog.stage : 0;
-
-  const handleConfirmExplore = () => {
-    if (!exploreResult) {
-      return;
-    }
-
-    dispatch({
-      type: "APPLY_EXPLORE_RESULT",
-      result: {
-        finalHp: exploreResult.finalHp,
-        clearedStage: exploreResult.clearedStage,
-        reward: exploreResult.totalReward,
-      },
-    });
-
-    setExploreResult(null);
-    setVisibleLogCount(0);
-    setIsExploreResultReady(false);
   };
 
   return (
@@ -284,7 +215,7 @@ export default function Home() {
               attack={attack}
               canExplore={currentHp > 0 && !isResting && !state.isExploring}
               isExploring={state.isExploring}
-              onExploreStart={handleExploreStart}
+              onExploreStart={startExplore}
               onSetFloor={(floor: Floor) => dispatch({ type: "SET_FLOOR", floor })}
             />
           </div>
@@ -307,55 +238,13 @@ export default function Home() {
         </section>
       </main>
 
-      {state.isExploring && exploreResult ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div className="w-full max-w-xl rounded-xl bg-white p-5 shadow-xl ring-1 ring-slate-200">
-            <h2 className="text-lg font-bold">탐험 진행</h2>
-            <p className="mt-2 text-sm text-slate-700">
-              현재 단계: {state.currentFloor}-{popupCurrentStage > 0 ? popupCurrentStage : 1}
-            </p>
-            <p className="mt-1 text-sm text-slate-700">현재 체력: {popupCurrentHp}/{maxHp}</p>
-            <p className="mt-1 text-sm text-slate-700">진행률: {visibleLogs.length}/10</p>
-
-            <div className="mt-4 max-h-52 overflow-y-auto rounded-md bg-slate-50 p-3 text-sm ring-1 ring-slate-200">
-              {visibleLogs.length === 0 ? (
-                <p className="text-slate-500">탐험 시작 준비 중...</p>
-              ) : (
-                <ul className="space-y-1">
-                  {visibleLogs.map((log) => (
-                    <li key={log.stage}>
-                      {state.currentFloor}-{log.stage} 클리어 | 피해 -{log.damageTaken} | HP {log.hpAfter} | 보상 철 {log.reward.ironOre}
-                      {log.reward.steelOre > 0 ? ` / 강 ${log.reward.steelOre}` : ""}
-                      {log.reward.mithril > 0 ? ` / 미 ${log.reward.mithril}` : ""}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-
-            {isExploreResultReady ? (
-              <div className="mt-4 rounded-md bg-emerald-50 p-3 text-sm text-emerald-900 ring-1 ring-emerald-200">
-                <p className="font-medium">탐험 종료</p>
-                <p className="mt-1">{getExploreEndReasonText(exploreResult)}</p>
-                <p className="mt-1">
-                  총 보상: 철광석 {exploreResult.totalReward.ironOre}
-                  {exploreResult.totalReward.steelOre > 0 ? `, 강철석 ${exploreResult.totalReward.steelOre}` : ""}
-                  {exploreResult.totalReward.mithril > 0 ? `, 미스릴 ${exploreResult.totalReward.mithril}` : ""}
-                </p>
-                <button
-                  type="button"
-                  className="mt-3 rounded-md bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700"
-                  onClick={handleConfirmExplore}
-                >
-                  확인
-                </button>
-              </div>
-            ) : (
-              <p className="mt-4 text-sm text-slate-500">단계별 진행을 계산 중입니다...</p>
-            )}
-          </div>
-        </div>
-      ) : null}
+      <ExploreProgressModal
+        isOpen={state.isExploring}
+        currentFloor={state.currentFloor}
+        maxHp={maxHp}
+        session={exploreSession}
+        onConfirm={confirmExplore}
+      />
     </>
   );
 }
