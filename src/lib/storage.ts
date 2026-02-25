@@ -1,8 +1,9 @@
-﻿import type { EquipmentItem, GameState } from "@/domain/state";
+﻿import { BASE_FORGE_UPGRADE_COST, MAX_FORGE_LEVEL } from "@/domain/forgeEconomy";
+import type { EquipmentItem, GameState } from "@/domain/state";
 import { INITIAL_HP } from "@/domain/state";
 
 const STORAGE_KEY = "reinforce-lab-state";
-const STATE_VERSION = 6;
+const STATE_VERSION = 7;
 
 type PersistedState = {
   stateVersion: number;
@@ -22,11 +23,7 @@ const isEquipmentItem = (value: unknown): value is EquipmentItem => {
   }
 
   const v = value as Partial<EquipmentItem>;
-  return (
-    typeof v.id === "string" &&
-    typeof v.plus === "number" &&
-    (v.kind === "weapon" || v.kind === "armor")
-  );
+  return typeof v.id === "string" && typeof v.plus === "number" && (v.kind === "weapon" || v.kind === "armor");
 };
 
 const calcBestPlusFromItems = (items: EquipmentItem[]): number => {
@@ -73,7 +70,11 @@ const expandSwordMapToItems = (swords: Record<string, number>, startId: number =
   return items;
 };
 
-const isValidGameState = (value: unknown): value is GameState => {
+const clampForgeLevel = (level: number): number => {
+  return Math.max(0, Math.min(MAX_FORGE_LEVEL, Math.floor(level)));
+};
+
+export const isValidStateV7 = (value: unknown): value is GameState => {
   if (typeof value !== "object" || value === null) {
     return false;
   }
@@ -87,7 +88,9 @@ const isValidGameState = (value: unknown): value is GameState => {
     typeof v.seed !== "number" ||
     typeof v.hp !== "number" ||
     !Array.isArray(v.equipmentItems) ||
-    typeof v.nextItemId !== "number"
+    typeof v.nextItemId !== "number" ||
+    typeof v.forgeLevel !== "number" ||
+    typeof v.forgeUpgradeCost !== "number"
   ) {
     return false;
   }
@@ -119,7 +122,7 @@ const isValidGameState = (value: unknown): value is GameState => {
   return true;
 };
 
-const migrateGameState = (value: unknown): GameState | null => {
+export const migrateLegacyState = (value: unknown): GameState | null => {
   if (typeof value !== "object" || value === null) {
     return null;
   }
@@ -179,6 +182,12 @@ const migrateGameState = (value: unknown): GameState | null => {
   const maxHp = INITIAL_HP + calcArmorBonus(equipmentItems, equippedArmorItemId);
   const hp = typeof v.hp === "number" ? Math.min(Math.max(0, v.hp), maxHp) : maxHp;
 
+  const forgeLevel = typeof v.forgeLevel === "number" ? clampForgeLevel(v.forgeLevel) : 0;
+  const forgeUpgradeCost =
+    typeof v.forgeUpgradeCost === "number" && Number.isFinite(v.forgeUpgradeCost) && v.forgeUpgradeCost > 0
+      ? Math.ceil(v.forgeUpgradeCost)
+      : BASE_FORGE_UPGRADE_COST;
+
   return {
     ironOre: v.ironOre,
     exploreCount: v.exploreCount,
@@ -190,6 +199,8 @@ const migrateGameState = (value: unknown): GameState | null => {
     equippedWeaponItemId,
     equippedArmorItemId,
     nextItemId,
+    forgeLevel,
+    forgeUpgradeCost,
   };
 };
 
@@ -207,6 +218,7 @@ export const loadState = (): GameState | null => {
     const parsed = JSON.parse(raw) as Partial<PersistedState>;
     if (
       parsed.stateVersion !== STATE_VERSION &&
+      parsed.stateVersion !== 6 &&
       parsed.stateVersion !== 5 &&
       parsed.stateVersion !== 4 &&
       parsed.stateVersion !== 3 &&
@@ -216,11 +228,11 @@ export const loadState = (): GameState | null => {
       return null;
     }
 
-    if (isValidGameState(parsed.gameState)) {
+    if (isValidStateV7(parsed.gameState)) {
       return parsed.gameState;
     }
 
-    return migrateGameState(parsed.gameState);
+    return migrateLegacyState(parsed.gameState);
   } catch {
     return null;
   }
@@ -238,3 +250,4 @@ export const saveState = (gameState: GameState): void => {
 
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 };
+

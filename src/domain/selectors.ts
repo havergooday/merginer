@@ -1,4 +1,5 @@
-﻿import { INITIAL_HP, type EquipmentItem } from "@/domain/state";
+﻿import { getMaxHp } from "@/domain/hp";
+import type { EquipmentItem } from "@/domain/state";
 
 export const calcBestPlus = (equipmentItems: EquipmentItem[]): number => {
   return equipmentItems.reduce((maxPlus, item) => (item.plus > maxPlus ? item.plus : maxPlus), 0);
@@ -17,11 +18,6 @@ export const calcAttackFromEquipped = (equippedWeaponItemId: string | null, equi
 };
 
 export const calcMaxHpFromEquippedArmor = (equippedArmorItemId: string | null, equipmentItems: EquipmentItem[]): number => {
-  if (!equippedArmorItemId) {
-    return INITIAL_HP;
-  }
-
-  const equipped = equipmentItems.find((item) => item.id === equippedArmorItemId && item.kind === "armor");
-  const bonus = equipped ? equipped.plus : 0;
-  return INITIAL_HP + bonus;
+  return getMaxHp(equippedArmorItemId, equipmentItems);
 };
+

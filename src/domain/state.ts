@@ -17,6 +17,8 @@ export type GameState = {
   equippedWeaponItemId: string | null;
   equippedArmorItemId: string | null;
   nextItemId: number;
+  forgeLevel: number;
+  forgeUpgradeCost: number;
 };
 
 export const INITIAL_SEED = 123456789;
@@ -33,4 +35,7 @@ export const createInitialGameState = (seed: number = INITIAL_SEED): GameState =
   equippedWeaponItemId: null,
   equippedArmorItemId: null,
   nextItemId: 2,
+  forgeLevel: 0,
+  forgeUpgradeCost: 100,
 });
+

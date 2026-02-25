@@ -31,3 +31,4 @@ export const randomInt = (seed: number, min: number, max: number): RngResult => 
     nextSeed,
   };
 };
+

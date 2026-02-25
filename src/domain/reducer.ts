@@ -1,5 +1,9 @@
-﻿import { randomInt } from "@/domain/rng";
-import { calcBestPlus, calcMaxHpFromEquippedArmor } from "@/domain/selectors";
+﻿import { canEquipToSlot } from "@/domain/equipment";
+import { validateForge } from "@/domain/forge";
+import { canUpgradeForge, getCraftCost, getEnhanceOreCost, getNextForgeUpgradeCost } from "@/domain/forgeEconomy";
+import { clampHpToMax, getMaxHp } from "@/domain/hp";
+import { randomInt } from "@/domain/rng";
+import { calcBestPlus } from "@/domain/selectors";
 import {
   createInitialGameState,
   INITIAL_HP,
@@ -13,6 +17,7 @@ export type Action =
   | { type: "CRAFT_WEAPON" }
   | { type: "CRAFT_ARMOR" }
   | { type: "FORGE_ENHANCE"; targetItemId: string; materialItemId: string }
+  | { type: "UPGRADE_FORGE" }
   | { type: "EQUIP"; itemId: string; slot: EquipmentKind }
   | { type: "UNEQUIP"; slot: EquipmentKind }
   | { type: "REST" }
@@ -23,6 +28,83 @@ const createEquipmentItem = (idNum: number, kind: EquipmentKind, plus: number): 
   kind,
   plus,
 });
+
+const addItem = (state: GameState, kind: EquipmentKind): GameState => {
+  const craftCost = getCraftCost(state.forgeLevel);
+  if (state.ironOre < craftCost) {
+    return state;
+  }
+
+  const crafted = createEquipmentItem(state.nextItemId, kind, 0);
+  const equipmentItems = [...state.equipmentItems, crafted];
+  return {
+    ...state,
+    ironOre: state.ironOre - craftCost,
+    equipmentItems,
+    bestPlus: calcBestPlus(equipmentItems),
+    nextItemId: state.nextItemId + 1,
+  };
+};
+
+const equipItem = (state: GameState, itemId: string, slot: EquipmentKind, hp: number): GameState => {
+  const item = state.equipmentItems.find((candidate) => candidate.id === itemId);
+  if (!canEquipToSlot(item, slot)) {
+    return state;
+  }
+
+  if (slot === "weapon") {
+    if (state.equippedWeaponItemId === itemId) {
+      return state;
+    }
+
+    return {
+      ...state,
+      equippedWeaponItemId: itemId,
+    };
+  }
+
+  if (state.equippedArmorItemId === itemId) {
+    return state;
+  }
+
+  const nextState = {
+    ...state,
+    equippedArmorItemId: itemId,
+  };
+  const maxHp = getMaxHp(nextState.equippedArmorItemId, nextState.equipmentItems);
+  return {
+    ...nextState,
+    hp: clampHpToMax(hp, maxHp),
+  };
+};
+
+const unequipItem = (state: GameState, slot: EquipmentKind, hp: number): GameState => {
+  if (slot === "weapon") {
+    if (state.equippedWeaponItemId === null) {
+      return state;
+    }
+
+    return {
+      ...state,
+      equippedWeaponItemId: null,
+    };
+  }
+
+  if (state.equippedArmorItemId === null) {
+    return state;
+  }
+
+  const nextState = {
+    ...state,
+    equippedArmorItemId: null,
+  };
+  const maxHp = getMaxHp(nextState.equippedArmorItemId, nextState.equipmentItems);
+
+  return {
+    ...nextState,
+    hp: clampHpToMax(hp, maxHp),
+  };
+};
 
 export const reducer = (state: GameState, action: Action): GameState => {
   const hp = Number.isFinite(state.hp) ? state.hp : INITIAL_HP;
@@ -43,131 +125,59 @@ export const reducer = (state: GameState, action: Action): GameState => {
         hp: Math.max(0, hp - 1),
       };
     }
-    case "CRAFT_WEAPON": {
-      if (state.ironOre < 10) {
-        return state;
-      }
-
-      const crafted = createEquipmentItem(state.nextItemId, "weapon", 0);
-      const equipmentItems = [...state.equipmentItems, crafted];
-      return {
-        ...state,
-        ironOre: state.ironOre - 10,
-        equipmentItems,
-        bestPlus: calcBestPlus(equipmentItems),
-        nextItemId: state.nextItemId + 1,
-      };
-    }
-    case "CRAFT_ARMOR": {
-      if (state.ironOre < 10) {
-        return state;
-      }
-
-      const crafted = createEquipmentItem(state.nextItemId, "armor", 0);
-      const equipmentItems = [...state.equipmentItems, crafted];
-      return {
-        ...state,
-        ironOre: state.ironOre - 10,
-        equipmentItems,
-        bestPlus: calcBestPlus(equipmentItems),
-        nextItemId: state.nextItemId + 1,
-      };
-    }
+    case "CRAFT_WEAPON":
+      return addItem(state, "weapon");
+    case "CRAFT_ARMOR":
+      return addItem(state, "armor");
     case "FORGE_ENHANCE": {
-      const { targetItemId, materialItemId } = action;
-      if (targetItemId === materialItemId || state.ironOre < 1) {
+      const validation = validateForge(state, action.targetItemId, action.materialItemId);
+      if (!validation.ok) {
         return state;
       }
 
-      const target = state.equipmentItems.find((item) => item.id === targetItemId);
-      const material = state.equipmentItems.find((item) => item.id === materialItemId);
-
-      if (!target || !material) {
-        return state;
-      }
-
-      if (
-        state.equippedWeaponItemId === targetItemId ||
-        state.equippedWeaponItemId === materialItemId ||
-        state.equippedArmorItemId === targetItemId ||
-        state.equippedArmorItemId === materialItemId
-      ) {
-        return state;
-      }
-
-      if (target.plus !== material.plus || target.kind !== material.kind) {
-        return state;
-      }
-
+      const { target, material } = validation;
       const remainingItems = state.equipmentItems.filter(
-        (item) => item.id !== targetItemId && item.id !== materialItemId,
+        (item) => item.id !== target.id && item.id !== material.id,
       );
       const enhancedItem = createEquipmentItem(state.nextItemId, target.kind, target.plus + 1);
       const equipmentItems = [...remainingItems, enhancedItem];
 
       return {
         ...state,
-        ironOre: state.ironOre - 1,
+        ironOre: state.ironOre - getEnhanceOreCost(target.plus),
         equipmentItems,
         bestPlus: calcBestPlus(equipmentItems),
         nextItemId: state.nextItemId + 1,
       };
     }
-    case "EQUIP": {
-      const { itemId, slot } = action;
-      const item = state.equipmentItems.find((candidate) => candidate.id === itemId);
-      if (!item || item.kind !== slot) {
+    case "UPGRADE_FORGE": {
+      if (!canUpgradeForge(state.forgeLevel)) {
+        return state;
+      }
+      if (state.ironOre < state.forgeUpgradeCost) {
         return state;
       }
 
-      if (slot === "weapon") {
-        if (state.equippedWeaponItemId === itemId) {
-          return state;
-        }
-
-        return {
-          ...state,
-          equippedWeaponItemId: itemId,
-        };
-      }
-
-      if (state.equippedArmorItemId === itemId) {
-        return state;
-      }
+      const nextLevel = state.forgeLevel + 1;
+      const nextCost = canUpgradeForge(nextLevel)
+        ? getNextForgeUpgradeCost(state.forgeUpgradeCost)
+        : state.forgeUpgradeCost;
 
       return {
         ...state,
-        equippedArmorItemId: itemId,
+        ironOre: state.ironOre - state.forgeUpgradeCost,
+        forgeLevel: nextLevel,
+        forgeUpgradeCost: nextCost,
       };
     }
-    case "UNEQUIP": {
-      if (action.slot === "weapon") {
-        if (state.equippedWeaponItemId === null) {
-          return state;
-        }
-
-        return {
-          ...state,
-          equippedWeaponItemId: null,
-        };
-      }
-
-      if (state.equippedArmorItemId === null) {
-        return state;
-      }
-
-      const nextMaxHp = calcMaxHpFromEquippedArmor(null, state.equipmentItems);
-      const nextHp = Math.min(hp, nextMaxHp);
-      return {
-        ...state,
-        hp: nextHp,
-        equippedArmorItemId: null,
-      };
-    }
+    case "EQUIP":
+      return equipItem(state, action.itemId, action.slot, hp);
+    case "UNEQUIP":
+      return unequipItem(state, action.slot, hp);
     case "RESET":
       return createInitialGameState(state.seed);
     case "REST": {
-      const maxHp = calcMaxHpFromEquippedArmor(state.equippedArmorItemId, state.equipmentItems);
+      const maxHp = getMaxHp(state.equippedArmorItemId, state.equipmentItems);
       if (hp === maxHp) {
         return state;
       }
@@ -182,3 +192,5 @@ export const reducer = (state: GameState, action: Action): GameState => {
       return state;
   }
 };
+
+
