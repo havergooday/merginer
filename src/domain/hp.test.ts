@@ -8,7 +8,7 @@ describe("hp helpers", () => {
       { id: "i-1", kind: "weapon", plus: 3 },
       { id: "i-10", kind: "armor", plus: 2 },
     ]);
-    expect(maxHp).toBe(12);
+    expect(maxHp).toBe(14);
   });
 
   it("clamps hp to max range", () => {

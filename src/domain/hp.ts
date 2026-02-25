@@ -13,7 +13,7 @@ export const getArmorBonus = (
 };
 
 export const getMaxHp = (equippedArmorItemId: string | null, equipmentItems: EquipmentItem[]): number => {
-  return INITIAL_HP + getArmorBonus(equippedArmorItemId, equipmentItems);
+  return INITIAL_HP + getArmorBonus(equippedArmorItemId, equipmentItems) * 2;
 };
 
 export const clampHpToMax = (hp: number, maxHp: number): number => {

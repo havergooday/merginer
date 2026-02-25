@@ -1,19 +1,33 @@
 ﻿import { canEquipToSlot } from "@/domain/equipment";
 import { validateForge } from "@/domain/forge";
-import { canUpgradeForge, getCraftCost, getEnhanceOreCost, getNextForgeUpgradeCost } from "@/domain/forgeEconomy";
+import {
+  canUpgradeForge,
+  getCraftCost,
+  getEnhanceMaterialCost,
+  getNextForgeUpgradeCost,
+} from "@/domain/forgeEconomy";
 import { clampHpToMax, getMaxHp } from "@/domain/hp";
-import { randomInt } from "@/domain/rng";
 import { calcBestPlus } from "@/domain/selectors";
 import {
   createInitialGameState,
   INITIAL_HP,
   type EquipmentItem,
   type EquipmentKind,
+  type Floor,
   type GameState,
+  type MaterialStock,
 } from "@/domain/state";
 
+type ExploreApplyResult = {
+  finalHp: number;
+  clearedStage: number;
+  reward: MaterialStock;
+};
+
 export type Action =
-  | { type: "EXPLORE_F1" }
+  | { type: "SET_FLOOR"; floor: Floor }
+  | { type: "START_EXPLORE" }
+  | { type: "APPLY_EXPLORE_RESULT"; result: ExploreApplyResult }
   | { type: "CRAFT_WEAPON" }
   | { type: "CRAFT_ARMOR" }
   | { type: "FORGE_ENHANCE"; targetItemId: string; materialItemId: string }
@@ -29,9 +43,23 @@ const createEquipmentItem = (idNum: number, kind: EquipmentKind, plus: number): 
   plus,
 });
 
+const getEquippedWeaponPlus = (state: GameState): number => {
+  if (!state.equippedWeaponItemId) {
+    return 0;
+  }
+  const weapon = state.equipmentItems.find(
+    (item) => item.id === state.equippedWeaponItemId && item.kind === "weapon",
+  );
+  return weapon ? weapon.plus : 0;
+};
+
+const getPlayerAttack = (state: GameState): number => {
+  return 1 + getEquippedWeaponPlus(state);
+};
+
 const addItem = (state: GameState, kind: EquipmentKind): GameState => {
   const craftCost = getCraftCost(state.forgeLevel);
-  if (state.ironOre < craftCost) {
+  if (state.materials.ironOre < craftCost) {
     return state;
   }
 
@@ -39,7 +67,10 @@ const addItem = (state: GameState, kind: EquipmentKind): GameState => {
   const equipmentItems = [...state.equipmentItems, crafted];
   return {
     ...state,
-    ironOre: state.ironOre - craftCost,
+    materials: {
+      ...state.materials,
+      ironOre: state.materials.ironOre - craftCost,
+    },
     equipmentItems,
     bestPlus: calcBestPlus(equipmentItems),
     nextItemId: state.nextItemId + 1,
@@ -106,23 +137,66 @@ const unequipItem = (state: GameState, slot: EquipmentKind, hp: number): GameSta
   };
 };
 
+const normalizeFloor = (floor: number): Floor => {
+  if (floor <= 1) {
+    return 1;
+  }
+  if (floor >= 3) {
+    return 3;
+  }
+  return 2;
+};
+
 export const reducer = (state: GameState, action: Action): GameState => {
   const hp = Number.isFinite(state.hp) ? state.hp : INITIAL_HP;
   const restCount = Number.isFinite(state.restCount) ? state.restCount : 0;
 
+  if (state.isExploring) {
+    if (action.type !== "APPLY_EXPLORE_RESULT" && action.type !== "RESET") {
+      return state;
+    }
+  }
+
   switch (action.type) {
-    case "EXPLORE_F1": {
-      if (hp <= 0) {
+    case "SET_FLOOR": {
+      const nextFloor = normalizeFloor(action.floor);
+      if (nextFloor === state.currentFloor) {
+        return state;
+      }
+      return {
+        ...state,
+        currentFloor: nextFloor,
+      };
+    }
+    case "START_EXPLORE": {
+      if (state.isExploring || hp <= 0) {
+        return state;
+      }
+      if (getPlayerAttack(state) <= 0) {
+        return state;
+      }
+      return {
+        ...state,
+        isExploring: true,
+        currentStage: 1,
+        exploreCount: state.exploreCount + 1,
+      };
+    }
+    case "APPLY_EXPLORE_RESULT": {
+      if (!state.isExploring) {
         return state;
       }
 
-      const { value: gain, nextSeed } = randomInt(state.seed, 1, 3);
       return {
         ...state,
-        ironOre: state.ironOre + gain,
-        exploreCount: state.exploreCount + 1,
-        seed: nextSeed,
-        hp: Math.max(0, hp - 1),
+        materials: {
+          ironOre: state.materials.ironOre + action.result.reward.ironOre,
+          steelOre: state.materials.steelOre + action.result.reward.steelOre,
+          mithril: state.materials.mithril + action.result.reward.mithril,
+        },
+        hp: Math.max(0, action.result.finalHp),
+        currentStage: 0,
+        isExploring: false,
       };
     }
     case "CRAFT_WEAPON":
@@ -136,6 +210,7 @@ export const reducer = (state: GameState, action: Action): GameState => {
       }
 
       const { target, material } = validation;
+      const requiredMaterials = getEnhanceMaterialCost(target.plus);
       const remainingItems = state.equipmentItems.filter(
         (item) => item.id !== target.id && item.id !== material.id,
       );
@@ -144,7 +219,11 @@ export const reducer = (state: GameState, action: Action): GameState => {
 
       return {
         ...state,
-        ironOre: state.ironOre - getEnhanceOreCost(target.plus),
+        materials: {
+          ironOre: state.materials.ironOre - (requiredMaterials.ironOre ?? 0),
+          steelOre: state.materials.steelOre - (requiredMaterials.steelOre ?? 0),
+          mithril: state.materials.mithril - (requiredMaterials.mithril ?? 0),
+        },
         equipmentItems,
         bestPlus: calcBestPlus(equipmentItems),
         nextItemId: state.nextItemId + 1,
@@ -154,7 +233,7 @@ export const reducer = (state: GameState, action: Action): GameState => {
       if (!canUpgradeForge(state.forgeLevel)) {
         return state;
       }
-      if (state.ironOre < state.forgeUpgradeCost) {
+      if (state.materials.ironOre < state.forgeUpgradeCost) {
         return state;
       }
 
@@ -165,7 +244,10 @@ export const reducer = (state: GameState, action: Action): GameState => {
 
       return {
         ...state,
-        ironOre: state.ironOre - state.forgeUpgradeCost,
+        materials: {
+          ...state.materials,
+          ironOre: state.materials.ironOre - state.forgeUpgradeCost,
+        },
         forgeLevel: nextLevel,
         forgeUpgradeCost: nextCost,
       };
@@ -192,5 +274,3 @@ export const reducer = (state: GameState, action: Action): GameState => {
       return state;
   }
 };
-
-

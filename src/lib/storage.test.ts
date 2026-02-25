@@ -1,6 +1,6 @@
 ﻿import { describe, expect, it } from "vitest";
 
-import { isValidStateV7, migrateLegacyState } from "@/lib/storage";
+import { isValidStateV9, migrateLegacyState } from "@/lib/storage";
 
 describe("storage migrations", () => {
   it("migrates legacy sword map with equippedPlus", () => {
@@ -17,6 +17,10 @@ describe("storage migrations", () => {
     expect(migrated?.equippedWeaponItemId).not.toBeNull();
     expect(migrated?.forgeLevel).toBe(0);
     expect(migrated?.forgeUpgradeCost).toBe(100);
+    expect(migrated?.materials.ironOre).toBe(0);
+    expect(migrated?.currentFloor).toBe(1);
+    expect(migrated?.currentStage).toBe(0);
+    expect(migrated?.isExploring).toBe(false);
   });
 
   it("migrates v5-style swordItems to equipmentItems", () => {
@@ -33,11 +37,12 @@ describe("storage migrations", () => {
 
     expect(migrated).not.toBeNull();
     expect(migrated?.equipmentItems.every((item) => item.kind === "weapon")).toBe(true);
+    expect(migrated?.materials.ironOre).toBe(3);
   });
 
-  it("accepts fully valid v7 state", () => {
+  it("accepts fully valid v9 state", () => {
     const state = {
-      ironOre: 1,
+      materials: { ironOre: 1, steelOre: 0, mithril: 0 },
       exploreCount: 0,
       restCount: 0,
       equipmentItems: [{ id: "i-1", kind: "weapon", plus: 0 }],
@@ -49,9 +54,11 @@ describe("storage migrations", () => {
       nextItemId: 2,
       forgeLevel: 0,
       forgeUpgradeCost: 100,
+      currentFloor: 1,
+      currentStage: 0,
+      isExploring: false,
     };
 
-    expect(isValidStateV7(state)).toBe(true);
+    expect(isValidStateV9(state)).toBe(true);
   });
 });
-

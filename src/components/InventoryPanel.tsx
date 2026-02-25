@@ -4,6 +4,7 @@ type InventoryPanelProps = {
   equippedWeapon: EquipmentItem | null;
   equippedArmor: EquipmentItem | null;
   inventoryItems: EquipmentItem[];
+  isTownLocked: boolean;
   onDragStart: (itemId: string) => (event: React.DragEvent<HTMLButtonElement>) => void;
   onDropEquip: (slot: EquipmentKind, itemId: string) => void;
   onUnequip: (slot: EquipmentKind) => void;
@@ -20,11 +21,15 @@ export const InventoryPanel = ({
   equippedWeapon,
   equippedArmor,
   inventoryItems,
+  isTownLocked,
   onDragStart,
   onDropEquip,
   onUnequip,
 }: InventoryPanelProps) => {
   const handleDrop = (slot: EquipmentKind) => (event: React.DragEvent<HTMLDivElement>) => {
+    if (isTownLocked) {
+      return;
+    }
     event.preventDefault();
     const itemId = event.dataTransfer.getData("text/plain");
     onDropEquip(slot, itemId);
@@ -38,14 +43,19 @@ export const InventoryPanel = ({
           <p className="mb-1 text-xs text-slate-600">무기 장착 슬롯 (드래그 장착 / 클릭 해제)</p>
           <div
             className="min-h-24 rounded-lg border-2 border-dashed border-violet-300 bg-white p-2"
-            onDragOver={(event) => event.preventDefault()}
+            onDragOver={(event) => {
+              if (!isTownLocked) {
+                event.preventDefault();
+              }
+            }}
             onDrop={handleDrop("weapon")}
           >
             {equippedWeapon ? (
               <button
                 type="button"
-                className="w-full rounded-md bg-violet-50 p-2 text-left text-sm hover:bg-violet-100"
+                className="w-full rounded-md bg-violet-50 p-2 text-left text-sm hover:bg-violet-100 disabled:cursor-not-allowed disabled:bg-violet-100"
                 onClick={() => onUnequip("weapon")}
+                disabled={isTownLocked}
               >
                 {slotText(equippedWeapon, "검")}
               </button>
@@ -58,14 +68,19 @@ export const InventoryPanel = ({
           <p className="mb-1 text-xs text-slate-600">갑옷 장착 슬롯 (드래그 장착 / 클릭 해제)</p>
           <div
             className="min-h-24 rounded-lg border-2 border-dashed border-emerald-300 bg-white p-2"
-            onDragOver={(event) => event.preventDefault()}
+            onDragOver={(event) => {
+              if (!isTownLocked) {
+                event.preventDefault();
+              }
+            }}
             onDrop={handleDrop("armor")}
           >
             {equippedArmor ? (
               <button
                 type="button"
-                className="w-full rounded-md bg-emerald-50 p-2 text-left text-sm hover:bg-emerald-100"
+                className="w-full rounded-md bg-emerald-50 p-2 text-left text-sm hover:bg-emerald-100 disabled:cursor-not-allowed disabled:bg-emerald-100"
                 onClick={() => onUnequip("armor")}
+                disabled={isTownLocked}
               >
                 {slotText(equippedArmor, "갑옷")}
               </button>
@@ -84,9 +99,10 @@ export const InventoryPanel = ({
             <button
               key={item.id}
               type="button"
-              draggable
+              draggable={!isTownLocked}
               onDragStart={onDragStart(item.id)}
-              className="aspect-square rounded-md border border-slate-300 bg-white p-2 text-left hover:border-indigo-400"
+              className="aspect-square rounded-md border border-slate-300 bg-white p-2 text-left hover:border-indigo-400 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
+              disabled={isTownLocked}
             >
               <div className="text-xs text-slate-500">{item.id}</div>
               <div className="mt-1 text-sm font-semibold">{item.kind === "weapon" ? "검" : "갑옷"}</div>
@@ -99,4 +115,3 @@ export const InventoryPanel = ({
     </section>
   );
 };
-

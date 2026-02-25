@@ -1,5 +1,8 @@
-﻿import { getEnhanceOreCost } from "@/domain/forgeEconomy";
-import type { EquipmentItem, GameState } from "@/domain/state";
+﻿import {
+  getEnhanceMaterialCost,
+  getRequiredForgeLevelForEnhance,
+} from "@/domain/forgeEconomy";
+import type { EquipmentItem, GameState, MaterialStock } from "@/domain/state";
 
 export type ForgeFailureReason =
   | "MISSING_SELECTION"
@@ -8,7 +11,11 @@ export type ForgeFailureReason =
   | "EQUIPPED_ITEM"
   | "KIND_MISMATCH"
   | "PLUS_MISMATCH"
-  | "INSUFFICIENT_ORE";
+  | "FORGE_LEVEL_TOO_LOW_FOR_STEEL"
+  | "FORGE_LEVEL_TOO_LOW_FOR_MITHRIL"
+  | "INSUFFICIENT_IRON_ORE"
+  | "INSUFFICIENT_STEEL_ORE"
+  | "INSUFFICIENT_MITHRIL";
 
 export type ForgeValidationResult =
   | {
@@ -20,6 +27,10 @@ export type ForgeValidationResult =
       ok: false;
       reason: ForgeFailureReason;
     };
+
+const hasEnoughMaterial = (materials: MaterialStock, key: keyof MaterialStock, need: number): boolean => {
+  return materials[key] >= need;
+};
 
 export const validateForge = (
   state: GameState,
@@ -57,9 +68,27 @@ export const validateForge = (
     return { ok: false, reason: "PLUS_MISMATCH" };
   }
 
-  const requiredOre = getEnhanceOreCost(target.plus);
-  if (state.ironOre < requiredOre) {
-    return { ok: false, reason: "INSUFFICIENT_ORE" };
+  const requiredForgeLevel = getRequiredForgeLevelForEnhance(target.plus);
+  if (requiredForgeLevel === 3 && state.forgeLevel < requiredForgeLevel) {
+    return { ok: false, reason: "FORGE_LEVEL_TOO_LOW_FOR_STEEL" };
+  }
+  if (requiredForgeLevel === 5 && state.forgeLevel < requiredForgeLevel) {
+    return { ok: false, reason: "FORGE_LEVEL_TOO_LOW_FOR_MITHRIL" };
+  }
+
+  const requiredMaterials = getEnhanceMaterialCost(target.plus);
+  const requiredIron = requiredMaterials.ironOre ?? 0;
+  const requiredSteel = requiredMaterials.steelOre ?? 0;
+  const requiredMithril = requiredMaterials.mithril ?? 0;
+
+  if (!hasEnoughMaterial(state.materials, "ironOre", requiredIron)) {
+    return { ok: false, reason: "INSUFFICIENT_IRON_ORE" };
+  }
+  if (!hasEnoughMaterial(state.materials, "steelOre", requiredSteel)) {
+    return { ok: false, reason: "INSUFFICIENT_STEEL_ORE" };
+  }
+  if (!hasEnoughMaterial(state.materials, "mithril", requiredMithril)) {
+    return { ok: false, reason: "INSUFFICIENT_MITHRIL" };
   }
 
   return { ok: true, target, material };

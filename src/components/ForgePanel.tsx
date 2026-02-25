@@ -8,6 +8,7 @@ type ForgePanelProps = {
   canCraftWeapon: boolean;
   canCraftArmor: boolean;
   canUpgradeForgeAction: boolean;
+  isTownLocked: boolean;
   selectedTarget: EquipmentItem | null;
   selectedMaterial: EquipmentItem | null;
   canForge: boolean;
@@ -31,6 +32,7 @@ export const ForgePanel = ({
   canCraftWeapon,
   canCraftArmor,
   canUpgradeForgeAction,
+  isTownLocked,
   selectedTarget,
   selectedMaterial,
   canForge,
@@ -44,6 +46,9 @@ export const ForgePanel = ({
   onClearSlots,
 }: ForgePanelProps) => {
   const makeDrop = (handler: (itemId: string) => void) => (event: React.DragEvent<HTMLDivElement>) => {
+    if (isTownLocked) {
+      return;
+    }
     event.preventDefault();
     const itemId = event.dataTransfer.getData("text/plain");
     handler(itemId);
@@ -62,7 +67,7 @@ export const ForgePanel = ({
           type="button"
           className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-indigo-300"
           onClick={onUpgradeForge}
-          disabled={!canUpgradeForgeAction}
+          disabled={isTownLocked || !canUpgradeForgeAction}
         >
           {forgeLevel >= 10 ? "최대 레벨 도달" : `대장간 강화 (철광석 ${forgeUpgradeCost})`}
         </button>
@@ -73,7 +78,7 @@ export const ForgePanel = ({
           type="button"
           className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-emerald-300"
           onClick={onCraftWeapon}
-          disabled={!canCraftWeapon}
+          disabled={isTownLocked || !canCraftWeapon}
         >
           검 제작 (철광석 {craftCost})
         </button>
@@ -81,7 +86,7 @@ export const ForgePanel = ({
           type="button"
           className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-teal-300"
           onClick={onCraftArmor}
-          disabled={!canCraftArmor}
+          disabled={isTownLocked || !canCraftArmor}
         >
           갑옷 제작 (철광석 {craftCost})
         </button>
@@ -92,7 +97,11 @@ export const ForgePanel = ({
           <p className="mb-1 text-xs text-slate-600">강화 대상 슬롯</p>
           <div
             className="min-h-24 rounded-lg border-2 border-dashed border-slate-300 bg-white p-2"
-            onDragOver={(event) => event.preventDefault()}
+            onDragOver={(event) => {
+              if (!isTownLocked) {
+                event.preventDefault();
+              }
+            }}
             onDrop={makeDrop(onDropTarget)}
           >
             {selectedTarget ? (
@@ -106,7 +115,11 @@ export const ForgePanel = ({
           <p className="mb-1 text-xs text-slate-600">강화 재료 슬롯</p>
           <div
             className="min-h-24 rounded-lg border-2 border-dashed border-slate-300 bg-white p-2"
-            onDragOver={(event) => event.preventDefault()}
+            onDragOver={(event) => {
+              if (!isTownLocked) {
+                event.preventDefault();
+              }
+            }}
             onDrop={makeDrop(onDropMaterial)}
           >
             {selectedMaterial ? (
@@ -123,22 +136,24 @@ export const ForgePanel = ({
           type="button"
           className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-slate-300"
           onClick={onForge}
-          disabled={!canForge}
+          disabled={isTownLocked || !canForge}
         >
           강화 실행
         </button>
         <button
           type="button"
-          className="rounded-md bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
+          className="rounded-md bg-slate-200 px-4 py-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:bg-slate-100"
           onClick={onClearSlots}
+          disabled={isTownLocked}
         >
           슬롯 비우기
         </button>
       </div>
       <p className="mt-2 text-xs text-slate-600">{forgeGuide}</p>
-      <p className="mt-1 text-xs text-slate-600">강화 비용: 동일 종류/동일 단계 장비 2개 + 철광석(현재 단계 수치)</p>
+      <p className="mt-1 text-xs text-slate-600">
+        강화 비용: 동일 종류/동일 단계 장비 2개 + 재료 자동 소모. +0~+5는 철광석 n개, +6~+9는 철광석 n + 강철석 n개
+        (대장간 3+), +10+는 철광석 n + 미스릴 n개 (대장간 5+)
+      </p>
     </section>
   );
 };
-
-
