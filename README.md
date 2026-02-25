@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+﻿# 강화 실험장 (MVP-D)
 
-## Getting Started
+Next.js(App Router) + React + TypeScript + TailwindCSS로 만든 단일 페이지 강화 실험 앱입니다.
 
-First, run the development server:
+## 실행
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 게임 규칙
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 시작 상태: 철광석 0개, 탐사 0회, +0 검 1개, 최고 강화 +0
+- 1층 탐사: 매번 철광석을 1~3개 획득하며 탐사 횟수가 1 증가
+- 검 제작: 철광석 10개를 소모해 +0 검 1개 제작
+- 합성: 같은 단계의 검 2개를 소모해 다음 단계 검 1개 생성
+- 합성은 항상 100% 성공
+- 공격력 표기식: `5 + bestPlus * 2`
+- 상태는 localStorage에 즉시 저장되며 새로고침 후 복원
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 확장 아이디어
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 층 추가 및 층별 드랍 테이블 분리
+- 강화 실패/보호권/파괴 같은 확률 규칙 실험
+- 장비 타입(검/방어구/악세) 분리와 세트 보너스
+- 시드 고정/입력 기능으로 밸런스 실험 재현성 강화
+- 차트 기반 성장 로그(탐사 대비 최고 강화, 기대값 비교)
