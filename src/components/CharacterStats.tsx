@@ -4,7 +4,6 @@ type CharacterStatsProps = {
   currentHp: number;
   maxHp: number;
   attack: number;
-  bestPlus: number;
   exploreCount: number;
   restCount: number;
   equippedWeapon: EquipmentItem | null;
@@ -15,27 +14,41 @@ export const CharacterStats = ({
   currentHp,
   maxHp,
   attack,
-  bestPlus,
   exploreCount,
   restCount,
   equippedWeapon,
   equippedArmor,
 }: CharacterStatsProps) => {
   return (
-    <section className="rounded-lg bg-slate-50 p-4 ring-1 ring-slate-200">
-      <h2 className="text-lg font-semibold">캐릭터 스텟</h2>
-      <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-        <div>
-          체력: {currentHp}/{maxHp}
+    <section className="window-panel p-3">
+      <h2 className="window-title">캐릭터 상태</h2>
+
+      <div className="kv-grid mt-3">
+        <div className="kv-row">
+          <span className="kv-label">HP</span>
+          <span className="kv-value">{currentHp}/{maxHp}</span>
         </div>
-        <div>공격력: {attack}</div>
-        <div>최고 강화: +{bestPlus}</div>
-        <div>탐사 횟수: {exploreCount}</div>
-        <div>휴식 횟수: {restCount}</div>
-        <div>무기 장착: {equippedWeapon ? `+${equippedWeapon.plus} 검` : "없음"}</div>
-        <div>갑옷 장착: {equippedArmor ? `+${equippedArmor.plus} 갑옷` : "없음"}</div>
+        <div className="kv-row">
+          <span className="kv-label">ATK</span>
+          <span className="kv-value">{attack}</span>
+        </div>
+        <div className="kv-row">
+          <span className="kv-label">WEAPON</span>
+          <span className="kv-value">{equippedWeapon ? `+${equippedWeapon.plus}` : "없음"}</span>
+        </div>
+        <div className="kv-row">
+          <span className="kv-label">ARMOR</span>
+          <span className="kv-value">{equippedArmor ? `+${equippedArmor.plus}` : "없음"}</span>
+        </div>
+        <div className="kv-row">
+          <span className="kv-label">EXPLORE</span>
+          <span className="kv-value">{exploreCount}회</span>
+        </div>
+        <div className="kv-row">
+          <span className="kv-label">REST</span>
+          <span className="kv-value">{restCount}회</span>
+        </div>
       </div>
     </section>
   );
 };
-

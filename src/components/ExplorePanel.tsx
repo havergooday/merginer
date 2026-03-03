@@ -1,6 +1,7 @@
 ﻿import type { Floor } from "@/domain/state";
 
 type ExplorePanelProps = {
+  unlockedFloor: Floor;
   currentFloor: Floor;
   currentStage: number;
   currentHp: number;
@@ -19,6 +20,7 @@ const floorHint: Record<Floor, string> = {
 };
 
 export const ExplorePanel = ({
+  unlockedFloor,
   currentFloor,
   currentStage,
   currentHp,
@@ -29,24 +31,44 @@ export const ExplorePanel = ({
   onExploreStart,
   onSetFloor,
 }: ExplorePanelProps) => {
+  const actionBadgeClass = isExploring
+    ? "ui-badge ui-badge-locked"
+    : canExplore
+      ? "ui-badge ui-badge-ready"
+      : "ui-badge ui-badge-blocked";
+
   return (
-    <section className="rounded-lg bg-slate-50 p-4 ring-1 ring-slate-200">
-      <h2 className="text-lg font-semibold">탐사 - 층</h2>
-      <p className="mt-2 text-sm">체력: {currentHp}/{maxHp}</p>
-      <p className="mt-1 text-sm">공격력: {attack}</p>
-      <p className="mt-1 text-sm">현재 위치: {currentFloor}층 {currentStage > 0 ? `${currentFloor}-${currentStage}` : "마을"}</p>
-      <p className="mt-1 text-xs text-slate-600">{floorHint[currentFloor]}</p>
+    <section className="rounded-lg bg-transparent p-0 ring-0">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-semibold">탐험 진행</h2>
+        <span className={actionBadgeClass}>{isExploring ? "진행 중" : canExplore ? "출발 가능" : "조건 부족"}</span>
+      </div>
+      <div className="kv-grid mt-2">
+        <div className="kv-row">
+          <span className="kv-label">HP</span>
+          <span className="kv-value">{currentHp}/{maxHp}</span>
+        </div>
+        <div className="kv-row">
+          <span className="kv-label">ATK</span>
+          <span className="kv-value">{attack}</span>
+        </div>
+        <div className="kv-row">
+          <span className="kv-label">LOCATION</span>
+          <span className="kv-value">{currentFloor}층 {currentStage > 0 ? `${currentFloor}-${currentStage}` : "마을"}</span>
+        </div>
+      </div>
+      <p className="mt-1 text-xs text-[color:var(--ui-text-dim)]">{floorHint[currentFloor]}</p>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {[1, 2, 3].map((floor) => (
           <button
             key={floor}
             type="button"
-            className="rounded-md bg-slate-200 px-3 py-1 text-sm font-medium text-slate-800 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+            className="ui-btn ui-btn-neutral px-3 py-1"
             onClick={() => onSetFloor(floor as Floor)}
-            disabled={isExploring}
+            disabled={isExploring || floor > unlockedFloor}
           >
-            {floor}층 선택
+            {floor}층 {floor > unlockedFloor ? "잠김" : "선택"}
           </button>
         ))}
       </div>
@@ -54,7 +76,7 @@ export const ExplorePanel = ({
       <div className="mt-3 flex flex-wrap gap-2">
         <button
           type="button"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:bg-blue-300 hover:bg-blue-700"
+          className="ui-btn ui-btn-secondary"
           onClick={onExploreStart}
           disabled={!canExplore}
         >

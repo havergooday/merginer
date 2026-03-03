@@ -3,6 +3,7 @@ import type { Floor, GameState, MaterialStock } from "@/domain/state";
 export type ExploreApplyResult = {
   finalHp: number;
   clearedStage: number;
+  endReason: "DEFEATED" | "FLOOR_CLEARED";
   reward: MaterialStock;
 };
 
@@ -30,6 +31,15 @@ export const startExplore = (state: GameState): GameState => {
 };
 
 export const applyExploreResult = (state: GameState, result: ExploreApplyResult): GameState => {
+  const unlockedFloor =
+    result.endReason === "FLOOR_CLEARED" && result.clearedStage >= 10
+      ? state.currentFloor === 1
+        ? 2
+        : state.currentFloor === 2
+          ? 3
+          : 3
+      : state.unlockedFloor;
+
   return {
     ...state,
     materials: {
@@ -38,6 +48,8 @@ export const applyExploreResult = (state: GameState, result: ExploreApplyResult)
       mithril: state.materials.mithril + result.reward.mithril,
     },
     hp: Math.max(0, result.finalHp),
+    unlockedFloor,
+    currentFloor: state.currentFloor > unlockedFloor ? unlockedFloor : state.currentFloor,
     currentStage: 0,
     isExploring: false,
   };

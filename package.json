@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "simulate:plus10": "node scripts/simulate-plus10.mjs"
+    "simulate:plus10": "node scripts/simulate-plus10.mjs",
+    "analyze:floor3": "node scripts/analyze-floor3-clear.mjs"
   },
   "dependencies": {
     "next": "16.1.6",

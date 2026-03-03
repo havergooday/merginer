@@ -92,6 +92,7 @@ export const useExploreProgress = ({
       result: {
         finalHp: exploreResult.finalHp,
         clearedStage: exploreResult.clearedStage,
+        endReason: exploreResult.endReason,
         reward: exploreResult.totalReward,
       },
     });

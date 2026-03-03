@@ -1,7 +1,8 @@
-import type { GameState } from "@/domain/state";
+﻿import type { GameState } from "@/domain/state";
 import { migrateLegacyState } from "@/lib/storage/migrations";
 import {
   isValidStateV9,
+  normalizeFloor,
   STATE_VERSION,
   STORAGE_KEY,
   type PersistedState,
@@ -21,9 +22,15 @@ const parsePersistedState: PersistedStateParser = (value: unknown): GameState | 
   }
 
   if (isValidStateV9(parsed.gameState)) {
+    const unlockedFloor = normalizeFloor(
+      typeof parsed.gameState.unlockedFloor === "number" ? parsed.gameState.unlockedFloor : parsed.gameState.currentFloor,
+    );
+    const currentFloor = parsed.gameState.currentFloor > unlockedFloor ? unlockedFloor : parsed.gameState.currentFloor;
+
     return {
       ...parsed.gameState,
-      // 탐험 도중 저장 상태는 로드시 항상 마을 상태로 정규화
+      unlockedFloor,
+      currentFloor,
       currentStage: 0,
       isExploring: false,
     };

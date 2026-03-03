@@ -1,6 +1,8 @@
 ﻿import { describe, expect, it } from "vitest";
 
 import {
+  canCraftMithril,
+  canCraftSteel,
   getCraftCost,
   getEnhanceMaterialCost,
   getEnhanceOreCost,
@@ -46,5 +48,17 @@ describe("forgeEconomy", () => {
     expect(getEnhanceMaterialCost(5)).toEqual({ ironOre: 5 });
     expect(getEnhanceMaterialCost(6)).toEqual({ ironOre: 6, steelOre: 6 });
     expect(getEnhanceMaterialCost(10)).toEqual({ ironOre: 10, mithril: 10 });
+  });
+
+  it("checks steel crafting unlock and 100:1 boundary", () => {
+    expect(canCraftSteel(1, 100)).toBe(false);
+    expect(canCraftSteel(2, 99)).toBe(false);
+    expect(canCraftSteel(2, 100)).toBe(true);
+  });
+
+  it("checks mithril crafting unlock and 100:1 boundary", () => {
+    expect(canCraftMithril(3, 100)).toBe(false);
+    expect(canCraftMithril(4, 99)).toBe(false);
+    expect(canCraftMithril(4, 100)).toBe(true);
   });
 });

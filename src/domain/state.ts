@@ -27,6 +27,7 @@ export type GameState = {
   nextItemId: number;
   forgeLevel: number;
   forgeUpgradeCost: number;
+  unlockedFloor: Floor;
   currentFloor: Floor;
   currentStage: number;
   isExploring: boolean;
@@ -37,7 +38,7 @@ export const INITIAL_HP = 10;
 
 export const createInitialGameState = (seed: number = INITIAL_SEED): GameState => ({
   materials: {
-    ironOre: 0,
+    ironOre: 20000,
     steelOre: 0,
     mithril: 0,
   },
@@ -52,7 +53,9 @@ export const createInitialGameState = (seed: number = INITIAL_SEED): GameState =
   nextItemId: 2,
   forgeLevel: 0,
   forgeUpgradeCost: 100,
+  unlockedFloor: 1,
   currentFloor: 1,
   currentStage: 0,
   isExploring: false,
 });
+

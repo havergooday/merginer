@@ -94,6 +94,7 @@ export const migrateLegacyState = (value: unknown): GameState | null => {
     nextItemId,
     forgeLevel,
     forgeUpgradeCost,
+    unlockedFloor: normalizeFloor(typeof v.unlockedFloor === "number" ? v.unlockedFloor : v.currentFloor),
     currentFloor: normalizeFloor(v.currentFloor),
     currentStage: 0,
     isExploring: false,

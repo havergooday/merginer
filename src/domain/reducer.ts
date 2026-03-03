@@ -1,5 +1,11 @@
 ﻿import { getMaxHp } from "@/domain/hp";
 import {
+  ORE_TO_STEEL_COST,
+  STEEL_TO_MITHRIL_COST,
+  canCraftMithril,
+  canCraftSteel,
+} from "@/domain/forgeEconomy";
+import {
   createInitialGameState,
   INITIAL_HP,
   type Floor,
@@ -26,6 +32,8 @@ export type Action =
   | { type: "APPLY_EXPLORE_RESULT"; result: ExploreApplyResult }
   | { type: "CRAFT_WEAPON" }
   | { type: "CRAFT_ARMOR" }
+  | { type: "CRAFT_STEEL" }
+  | { type: "CRAFT_MITHRIL" }
   | { type: "FORGE_ENHANCE"; targetItemId: string; materialItemId: string }
   | { type: "UPGRADE_FORGE" }
   | { type: "EQUIP"; itemId: string; slot: "weapon" | "armor" }
@@ -43,7 +51,7 @@ export const reducer = (state: GameState, action: Action): GameState => {
 
   switch (action.type) {
     case "SET_FLOOR": {
-      const nextFloor = normalizeFloor(action.floor);
+      const nextFloor = Math.min(normalizeFloor(action.floor), state.unlockedFloor) as Floor;
       if (nextFloor === state.currentFloor) {
         return state;
       }
@@ -69,6 +77,32 @@ export const reducer = (state: GameState, action: Action): GameState => {
       return craftEquipment(state, "weapon");
     case "CRAFT_ARMOR":
       return craftEquipment(state, "armor");
+    case "CRAFT_STEEL": {
+      if (!canCraftSteel(state.forgeLevel, state.materials.ironOre)) {
+        return state;
+      }
+      return {
+        ...state,
+        materials: {
+          ...state.materials,
+          ironOre: state.materials.ironOre - ORE_TO_STEEL_COST,
+          steelOre: state.materials.steelOre + 1,
+        },
+      };
+    }
+    case "CRAFT_MITHRIL": {
+      if (!canCraftMithril(state.forgeLevel, state.materials.steelOre)) {
+        return state;
+      }
+      return {
+        ...state,
+        materials: {
+          ...state.materials,
+          steelOre: state.materials.steelOre - STEEL_TO_MITHRIL_COST,
+          mithril: state.materials.mithril + 1,
+        },
+      };
+    }
     case "FORGE_ENHANCE":
       return enhanceEquipment(state, action.targetItemId, action.materialItemId);
     case "UPGRADE_FORGE":

@@ -50,6 +50,7 @@ describe("reducer", () => {
       result: {
         finalHp: 4,
         clearedStage: 5,
+        endReason: "DEFEATED",
         reward: { ironOre: 9, steelOre: 1, mithril: 0 },
       },
     });
@@ -71,6 +72,8 @@ describe("reducer", () => {
     expect(reducer(state, { type: "FORGE_ENHANCE", targetItemId: "i-1", materialItemId: "i-1" })).toEqual(state);
     expect(reducer(state, { type: "REST" })).toEqual(state);
     expect(reducer(state, { type: "EQUIP", itemId: "i-1", slot: "weapon" })).toEqual(state);
+    expect(reducer(state, { type: "CRAFT_STEEL" })).toEqual(state);
+    expect(reducer(state, { type: "CRAFT_MITHRIL" })).toEqual(state);
     expect(reducer(state, { type: "SET_FLOOR", floor: 2 })).toEqual(state);
   });
 
@@ -81,6 +84,7 @@ describe("reducer", () => {
       result: {
         finalHp: 0,
         clearedStage: 0,
+        endReason: "DEFEATED",
         reward: { ironOre: 999, steelOre: 999, mithril: 999 },
       },
     });
@@ -101,6 +105,7 @@ describe("reducer", () => {
       result: {
         finalHp: 80,
         clearedStage: 10,
+        endReason: "FLOOR_CLEARED",
         reward: { ironOre: 23, steelOre: 0, mithril: 0 },
       },
     });
@@ -124,6 +129,7 @@ describe("reducer", () => {
       result: {
         finalHp: 60,
         clearedStage: 10,
+        endReason: "FLOOR_CLEARED",
         reward: { ironOre: 29, steelOre: 11, mithril: 0 },
       },
     });
@@ -147,6 +153,7 @@ describe("reducer", () => {
       result: {
         finalHp: 50,
         clearedStage: 10,
+        endReason: "FLOOR_CLEARED",
         reward: { ironOre: 37, steelOre: 18, mithril: 7 },
       },
     });
@@ -188,5 +195,95 @@ describe("reducer", () => {
 
     const afterCap = reducer(state, { type: "UPGRADE_FORGE" });
     expect(afterCap).toEqual(state);
+  });
+
+  it("crafts steel at forge level 2 with 100 iron ore", () => {
+    const state: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 2,
+      materials: { ironOre: 100, steelOre: 0, mithril: 0 },
+    };
+    const next = reducer(state, { type: "CRAFT_STEEL" });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 1, mithril: 0 });
+  });
+
+  it("crafts mithril at forge level 4 with 100 steel ore", () => {
+    const state: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 4,
+      materials: { ironOre: 0, steelOre: 100, mithril: 0 },
+    };
+    const next = reducer(state, { type: "CRAFT_MITHRIL" });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 1 });
+  });
+
+  it("does not craft materials when level or input materials are insufficient", () => {
+    const lowLevel: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 1,
+      materials: { ironOre: 100, steelOre: 100, mithril: 0 },
+    };
+    expect(reducer(lowLevel, { type: "CRAFT_STEEL" })).toEqual(lowLevel);
+    expect(reducer(lowLevel, { type: "CRAFT_MITHRIL" })).toEqual(lowLevel);
+
+    const lowMaterials: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 4,
+      materials: { ironOre: 99, steelOre: 99, mithril: 0 },
+    };
+    expect(reducer(lowMaterials, { type: "CRAFT_STEEL" })).toEqual(lowMaterials);
+    expect(reducer(lowMaterials, { type: "CRAFT_MITHRIL" })).toEqual(lowMaterials);
+  });
+
+  it("locks floor selection until previous floor is fully cleared", () => {
+    let state: GameState = createInitialGameState();
+
+    state = reducer(state, { type: "SET_FLOOR", floor: 2 });
+    expect(state.currentFloor).toBe(1);
+
+    state = {
+      ...state,
+      isExploring: true,
+      currentFloor: 1,
+      currentStage: 1,
+    };
+    state = reducer(state, {
+      type: "APPLY_EXPLORE_RESULT",
+      result: {
+        finalHp: 30,
+        clearedStage: 10,
+        endReason: "FLOOR_CLEARED",
+        reward: { ironOre: 23, steelOre: 0, mithril: 0 },
+      },
+    });
+
+    state = reducer(state, { type: "SET_FLOOR", floor: 2 });
+    expect(state.currentFloor).toBe(2);
+
+    state = reducer(state, { type: "SET_FLOOR", floor: 3 });
+    expect(state.currentFloor).toBe(2);
+  });
+
+  it("unlocks floor 3 after clearing floor 2 stage 10", () => {
+    let state: GameState = {
+      ...createInitialGameState(),
+      unlockedFloor: 2,
+      currentFloor: 2,
+      isExploring: true,
+      currentStage: 1,
+    };
+
+    state = reducer(state, {
+      type: "APPLY_EXPLORE_RESULT",
+      result: {
+        finalHp: 12,
+        clearedStage: 10,
+        endReason: "FLOOR_CLEARED",
+        reward: { ironOre: 29, steelOre: 11, mithril: 0 },
+      },
+    });
+
+    state = reducer(state, { type: "SET_FLOOR", floor: 3 });
+    expect(state.currentFloor).toBe(3);
   });
 });

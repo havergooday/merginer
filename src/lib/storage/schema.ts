@@ -123,6 +123,7 @@ export const isValidStateV9 = (value: unknown): value is GameState => {
     typeof v.nextItemId !== "number" ||
     typeof v.forgeLevel !== "number" ||
     typeof v.forgeUpgradeCost !== "number" ||
+    (v.unlockedFloor !== undefined && v.unlockedFloor !== 1 && v.unlockedFloor !== 2 && v.unlockedFloor !== 3) ||
     !materials ||
     typeof materials.ironOre !== "number" ||
     typeof materials.steelOre !== "number" ||
