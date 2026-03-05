@@ -3,6 +3,9 @@
 import {
   canCraftMithril,
   canCraftSteel,
+  getEnhanceBaseSuccessRate,
+  getEnhanceBonusRate,
+  getEnhanceFinalSuccessRate,
   getCraftCost,
   getEnhanceMaterialCost,
   getEnhanceOreCost,
@@ -60,5 +63,20 @@ describe("forgeEconomy", () => {
     expect(canCraftMithril(3, 100)).toBe(false);
     expect(canCraftMithril(4, 99)).toBe(false);
     expect(canCraftMithril(4, 100)).toBe(true);
+  });
+
+  it("returns enhance base success rate on gradual decay curve", () => {
+    expect(getEnhanceBaseSuccessRate(0)).toBeCloseTo(0.9);
+    expect(getEnhanceBaseSuccessRate(5)).toBeCloseTo(0.7);
+    expect(getEnhanceBaseSuccessRate(6)).toBeCloseTo(0.65);
+    expect(getEnhanceBaseSuccessRate(9)).toBeCloseTo(0.45);
+    expect(getEnhanceBaseSuccessRate(10)).toBeCloseTo(0.4);
+  });
+
+  it("caps fail-streak bonus rate and applies to final success rate", () => {
+    expect(getEnhanceBonusRate(0)).toBeCloseTo(0);
+    expect(getEnhanceBonusRate(3)).toBeCloseTo(0.09);
+    expect(getEnhanceBonusRate(999)).toBeCloseTo(0.24);
+    expect(getEnhanceFinalSuccessRate(5, 3)).toBeCloseTo(0.79);
   });
 });

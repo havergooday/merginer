@@ -128,6 +128,7 @@ export const isValidStateV9 = (value: unknown): value is GameState => {
     typeof materials.ironOre !== "number" ||
     typeof materials.steelOre !== "number" ||
     typeof materials.mithril !== "number" ||
+    typeof v.enhanceFailStreak !== "number" ||
     (v.currentFloor !== 1 && v.currentFloor !== 2 && v.currentFloor !== 3) ||
     typeof v.currentStage !== "number" ||
     typeof v.isExploring !== "boolean"

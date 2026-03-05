@@ -178,6 +178,51 @@ describe("reducer", () => {
     const next = reducer(state, { type: "FORGE_ENHANCE", targetItemId: "i-1", materialItemId: "i-2" });
     expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 0 });
     expect(next.equipmentItems).toEqual([{ id: "i-3", kind: "weapon", plus: 7 }]);
+    expect(next.enhanceFailStreak).toBe(0);
+  });
+
+  it("applies enhance fail action by destroying material only and increasing fail streak", () => {
+    const state: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 3,
+      enhanceFailStreak: 1,
+      materials: { ironOre: 6, steelOre: 6, mithril: 0 },
+      equipmentItems: [
+        { id: "i-1", kind: "weapon" as const, plus: 6 },
+        { id: "i-2", kind: "weapon" as const, plus: 6 },
+      ],
+      nextItemId: 3,
+    };
+
+    const next = reducer(state, {
+      type: "FORGE_ENHANCE_FAIL_MATERIAL_DESTROYED",
+      targetItemId: "i-1",
+      materialItemId: "i-2",
+    });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 0 });
+    expect(next.equipmentItems).toEqual([{ id: "i-1", kind: "weapon", plus: 6 }]);
+    expect(next.enhanceFailStreak).toBe(2);
+  });
+
+  it("resets fail streak on explicit enhance success action", () => {
+    const state: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 0,
+      enhanceFailStreak: 5,
+      materials: { ironOre: 0, steelOre: 0, mithril: 0 },
+      equipmentItems: [
+        { id: "i-1", kind: "weapon" as const, plus: 0 },
+        { id: "i-2", kind: "weapon" as const, plus: 0 },
+      ],
+      nextItemId: 3,
+    };
+
+    const next = reducer(state, {
+      type: "FORGE_ENHANCE_SUCCESS",
+      targetItemId: "i-1",
+      materialItemId: "i-2",
+    });
+    expect(next.enhanceFailStreak).toBe(0);
   });
 
   it("upgrades forge with increasing cost and caps at level 10", () => {

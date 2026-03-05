@@ -54,6 +54,7 @@ describe("storage migrations", () => {
       nextItemId: 2,
       forgeLevel: 0,
       forgeUpgradeCost: 100,
+      enhanceFailStreak: 0,
       currentFloor: 1,
       currentStage: 0,
       isExploring: false,

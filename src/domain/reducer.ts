@@ -22,6 +22,7 @@ import { equipToSlot, unequipFromSlot } from "@/domain/usecases/equipmentFlow";
 import {
   craftEquipment,
   enhanceEquipment,
+  failEnhanceMaterialDestroyed,
   getPlayerAttack,
   upgradeForge,
 } from "@/domain/usecases/forgeFlow";
@@ -35,6 +36,8 @@ export type Action =
   | { type: "CRAFT_STEEL" }
   | { type: "CRAFT_MITHRIL" }
   | { type: "FORGE_ENHANCE"; targetItemId: string; materialItemId: string }
+  | { type: "FORGE_ENHANCE_SUCCESS"; targetItemId: string; materialItemId: string }
+  | { type: "FORGE_ENHANCE_FAIL_MATERIAL_DESTROYED"; targetItemId: string; materialItemId: string }
   | { type: "UPGRADE_FORGE" }
   | { type: "EQUIP"; itemId: string; slot: "weapon" | "armor" }
   | { type: "UNEQUIP"; slot: "weapon" | "armor" }
@@ -44,6 +47,7 @@ export type Action =
 export const reducer = (state: GameState, action: Action): GameState => {
   const hp = Number.isFinite(state.hp) ? state.hp : INITIAL_HP;
   const restCount = Number.isFinite(state.restCount) ? state.restCount : 0;
+  const enhanceFailStreak = Number.isFinite(state.enhanceFailStreak) ? state.enhanceFailStreak : 0;
 
   if (state.isExploring && action.type !== "APPLY_EXPLORE_RESULT" && action.type !== "RESET") {
     return state;
@@ -103,8 +107,36 @@ export const reducer = (state: GameState, action: Action): GameState => {
         },
       };
     }
-    case "FORGE_ENHANCE":
-      return enhanceEquipment(state, action.targetItemId, action.materialItemId);
+    case "FORGE_ENHANCE": {
+      const nextState = enhanceEquipment(state, action.targetItemId, action.materialItemId);
+      if (nextState === state) {
+        return state;
+      }
+      return {
+        ...nextState,
+        enhanceFailStreak: 0,
+      };
+    }
+    case "FORGE_ENHANCE_SUCCESS": {
+      const nextState = enhanceEquipment(state, action.targetItemId, action.materialItemId);
+      if (nextState === state) {
+        return state;
+      }
+      return {
+        ...nextState,
+        enhanceFailStreak: 0,
+      };
+    }
+    case "FORGE_ENHANCE_FAIL_MATERIAL_DESTROYED": {
+      const nextState = failEnhanceMaterialDestroyed(state, action.targetItemId, action.materialItemId);
+      if (nextState === state) {
+        return state;
+      }
+      return {
+        ...nextState,
+        enhanceFailStreak: enhanceFailStreak + 1,
+      };
+    }
     case "UPGRADE_FORGE":
       return upgradeForge(state);
     case "EQUIP":

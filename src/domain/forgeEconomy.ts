@@ -55,3 +55,37 @@ export const getEnhanceMaterialCost = (plus: number): MaterialCost => {
   }
   return { ironOre: normalizedPlus };
 };
+
+export const ENHANCE_BONUS_STEP = 0.03;
+export const ENHANCE_BONUS_MAX = 0.24;
+
+export const getEnhanceBaseSuccessRate = (plus: number): number => {
+  const normalizedPlus = Math.max(0, Math.floor(plus));
+  if (normalizedPlus <= 5) {
+    return Math.max(0.7, 0.9 - normalizedPlus * 0.04);
+  }
+  if (normalizedPlus <= 9) {
+    return Math.max(0.45, 0.65 - (normalizedPlus - 6) * 0.07);
+  }
+  return Math.max(0.3, 0.4 - (normalizedPlus - 10) * 0.02);
+};
+
+export const getEnhanceBonusRate = (
+  failStreak: number,
+  bonusStep: number = ENHANCE_BONUS_STEP,
+  maxBonus: number = ENHANCE_BONUS_MAX,
+): number => {
+  const normalizedFailStreak = Math.max(0, Math.floor(failStreak));
+  return Math.min(maxBonus, normalizedFailStreak * bonusStep);
+};
+
+export const getEnhanceFinalSuccessRate = (
+  plus: number,
+  failStreak: number,
+  bonusStep?: number,
+  maxBonus?: number,
+): number => {
+  const baseRate = getEnhanceBaseSuccessRate(plus);
+  const bonusRate = getEnhanceBonusRate(failStreak, bonusStep, maxBonus);
+  return Math.min(0.95, baseRate + bonusRate);
+};

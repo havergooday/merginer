@@ -98,5 +98,6 @@ export const migrateLegacyState = (value: unknown): GameState | null => {
     currentFloor: normalizeFloor(v.currentFloor),
     currentStage: 0,
     isExploring: false,
+    enhanceFailStreak: typeof v.enhanceFailStreak === "number" ? Math.max(0, Math.floor(v.enhanceFailStreak)) : 0,
   };
 };

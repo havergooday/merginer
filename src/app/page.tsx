@@ -1,14 +1,8 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 
-import { CharacterStats } from "@/components/CharacterStats";
-import { ExplorePanel } from "@/components/ExplorePanel";
-import { ExploreProgressModal } from "@/components/ExploreProgressModal";
-import { ForgePanel } from "@/components/ForgePanel";
 import { ForgeSideInventorySplitBox } from "@/components/ForgeSideInventorySplitBox";
-import { InnPanel } from "@/components/InnPanel";
-import { InventoryPanel } from "@/components/InventoryPanel";
 import {
   type CombineRecipe,
   ResourcePreviewCard,
@@ -23,6 +17,9 @@ import {
   canCraftSteel,
   canUpgradeForge,
   getCraftCost,
+  getEnhanceBaseSuccessRate,
+  getEnhanceBonusRate,
+  getEnhanceFinalSuccessRate,
   getEnhanceMaterialCost,
   getRequiredForgeLevelForEnhance,
 } from "@/domain/forgeEconomy";
@@ -40,7 +37,19 @@ import { useForgeSlots } from "@/hooks/useForgeSlots";
 import { formatAsMmSs, useRestCountdown } from "@/hooks/useRestCountdown";
 import { loadState, saveState } from "@/lib/storage";
 
-type RightTab = "forge" | "explore";
+type EnhanceFxState = "idle" | "attempt" | "success" | "fail";
+type TextScaleMode = "small" | "medium" | "large";
+const ENHANCE_FX_DURATION: Record<EnhanceFxState, number> = {
+  idle: 0,
+  attempt: 180,
+  success: 520,
+  fail: 1040,
+};
+const TEXT_SCALE_PIXELS: Record<TextScaleMode, number> = {
+  small: 17.5,
+  medium: 18.5,
+  large: 19.5,
+};
 
 const getInitialState = () => {
   const stored = loadState();
@@ -78,16 +87,29 @@ const formatMaterialCost = (plus: number): string => {
 
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
-  const [activeRightTab, setActiveRightTab] = useState<RightTab>("forge");
-  const [isResourceView, setIsResourceView] = useState(false);
+  const [textScaleMode, setTextScaleMode] = useState<TextScaleMode>("small");
   const [resourceLocation, setResourceLocation] = useState<ResourceLocation>("village");
   const [forgeSubTab, setForgeSubTab] = useState<ForgeSubTab>("craft");
+  const [enhanceFxState, setEnhanceFxState] = useState<EnhanceFxState>("idle");
   const [selectedInventoryItemId, setSelectedInventoryItemId] = useState<string | null>(null);
+  const enhanceFxTimerRef = useRef<number | null>(null);
   const { logs: activityLogs, pushLog } = useActivityLog();
+
+  useEffect(() => {
+    return () => {
+      if (enhanceFxTimerRef.current !== null) {
+        window.clearTimeout(enhanceFxTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     saveState(state);
   }, [state]);
+
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${TEXT_SCALE_PIXELS[textScaleMode]}px`;
+  }, [textScaleMode]);
 
   const equippedWeapon = useMemo(
     () => state.equipmentItems.find((item) => item.id === state.equippedWeaponItemId) ?? null,
@@ -146,6 +168,7 @@ export default function Home() {
     () => calcAttackFromEquipped(state.equippedWeaponItemId, state.equipmentItems),
     [state.equippedWeaponItemId, state.equipmentItems],
   );
+  const enhanceFailStreak = Number.isFinite(state.enhanceFailStreak) ? state.enhanceFailStreak : 0;
 
   const craftCost = useMemo(() => getCraftCost(state.forgeLevel), [state.forgeLevel]);
   const canCraftSteelNow = useMemo(
@@ -205,6 +228,21 @@ export default function Home() {
           forgeValidation.target.plus,
         )}, 요구 대장간 ${getRequiredForgeLevelForEnhance(forgeValidation.target.plus)} / 현재 ${state.forgeLevel})`
       : forgeReasonText[forgeValidation.reason];
+  const enhanceBaseRate = useMemo(
+    () => (forgeSlots.selectedTarget ? getEnhanceBaseSuccessRate(forgeSlots.selectedTarget.plus) : 0),
+    [forgeSlots.selectedTarget],
+  );
+  const enhanceBonusRate = useMemo(
+    () => (forgeSlots.selectedTarget ? getEnhanceBonusRate(enhanceFailStreak) : 0),
+    [enhanceFailStreak, forgeSlots.selectedTarget],
+  );
+  const enhanceFinalRate = useMemo(
+    () =>
+      forgeSlots.selectedTarget
+        ? getEnhanceFinalSuccessRate(forgeSlots.selectedTarget.plus, enhanceFailStreak)
+        : 0,
+    [enhanceFailStreak, forgeSlots.selectedTarget],
+  );
   const { enhanceRequirementLine1, enhanceRequirementLine2 } = useMemo(() => {
     const target = forgeSlots.selectedTarget;
     if (!target) {
@@ -235,36 +273,90 @@ export default function Home() {
 
   const canUseRestNow = currentHp < maxHp && !state.isExploring;
   const { isResting, restRemainingSec, triggerRest } = useRestCountdown(dispatch, canUseRestNow);
-  const { session: exploreSession, startExplore, confirmExplore } = useExploreProgress({
+  const {
+    session: exploreSession,
+    startExplore,
+    confirmExplore,
+    exploreSpeedMode,
+    setExploreSpeedMode,
+  } = useExploreProgress({
     currentFloor: state.currentFloor,
     currentHp,
     attack,
     isExploring: state.isExploring,
     isResting,
+    presentationMode: "event",
     dispatch,
   });
+  const displayedCurrentHp =
+    state.isExploring && exploreSession ? Math.max(0, Math.min(exploreSession.popupCurrentHp, maxHp)) : currentHp;
+
+  const inResourceEnhanceMode = resourceLocation === "forge" && forgeSubTab === "enhance";
+
+  useEffect(() => {
+    if (!inResourceEnhanceMode && enhanceFxState !== "idle") {
+      setEnhanceFxState("idle");
+    }
+  }, [enhanceFxState, inResourceEnhanceMode]);
+
+  const triggerEnhanceFx = (nextState: EnhanceFxState) => {
+    if (enhanceFxTimerRef.current !== null) {
+      window.clearTimeout(enhanceFxTimerRef.current);
+    }
+    setEnhanceFxState(nextState);
+    if (nextState === "idle") {
+      return;
+    }
+    const duration = ENHANCE_FX_DURATION[nextState];
+    enhanceFxTimerRef.current = window.setTimeout(() => {
+      setEnhanceFxState("idle");
+    }, duration);
+  };
 
   const handleForge = () => {
-    if (isResourceView) {
-      pushLog("강화 시도", "info");
-    }
+    triggerEnhanceFx("attempt");
+    pushLog("강화 시도", "info");
 
     if (!forgeValidation.ok) {
-      if (isResourceView) {
-        pushLog(`강화 실패: ${forgeReasonText[forgeValidation.reason]}`, "warn");
-      }
+      triggerEnhanceFx("fail");
+      pushLog(`강화 실패: ${forgeReasonText[forgeValidation.reason]}`, "warn");
+      return;
+    }
+
+    if (!inResourceEnhanceMode) {
+      dispatch({
+        type: "FORGE_ENHANCE",
+        targetItemId: forgeValidation.target.id,
+        materialItemId: forgeValidation.material.id,
+      });
+      triggerEnhanceFx("success");
+      pushLog("강화 성공!", "success");
+      forgeSlots.clearSlots();
+      return;
+    }
+
+    const success = Math.random() < enhanceFinalRate;
+    if (success) {
+      dispatch({
+        type: "FORGE_ENHANCE_SUCCESS",
+        targetItemId: forgeValidation.target.id,
+        materialItemId: forgeValidation.material.id,
+      });
+      pushLog("강화 성공!", "success");
+      triggerEnhanceFx("success");
+      forgeSlots.clearSlots();
       return;
     }
 
     dispatch({
-      type: "FORGE_ENHANCE",
+      type: "FORGE_ENHANCE_FAIL_MATERIAL_DESTROYED",
       targetItemId: forgeValidation.target.id,
       materialItemId: forgeValidation.material.id,
     });
-    if (isResourceView) {
-      pushLog("강화 성공!", "success");
-    }
-    forgeSlots.clearSlots();
+    pushLog("강화 실패: 재료 장비가 파괴되었습니다.", "warn");
+    pushLog(`실패 보정 누적: +${(getEnhanceBonusRate(enhanceFailStreak + 1) * 100).toFixed(1)}%`, "info");
+    triggerEnhanceFx("fail");
+    forgeSlots.setForgeMaterialItemId(null);
   };
 
 
@@ -335,232 +427,109 @@ export default function Home() {
     <>
       <main className="min-h-screen p-3 text-[color:var(--ui-text)] sm:p-4">
         <section className="mx-auto mb-3 max-w-7xl">
-          <div className="window-panel ui-mode-bar flex items-center justify-between gap-3 p-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[color:var(--ui-text-dim)]">
-              Title
-            </span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                className={`ui-btn px-3 py-1.5 ${!isResourceView ? "ui-btn-primary" : "ui-btn-neutral"}`}
-                onClick={() => setIsResourceView(false)}
-              >
-                기본 UI
-              </button>
-              <button
-                type="button"
-                className={`ui-btn px-3 py-1.5 ${isResourceView ? "ui-btn-primary" : "ui-btn-neutral"}`}
-                onClick={() => setIsResourceView(true)}
-              >
-                리소스 UI
-              </button>
+          <div className="window-panel ui-mode-bar flex items-center justify-end gap-3 p-2">
+            <div className="flex items-center gap-2">
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  className={`ui-btn px-2 py-1 ${textScaleMode === "small" ? "ui-btn-primary" : "ui-btn-neutral"}`}
+                  onClick={() => setTextScaleMode("small")}
+                >
+                  소
+                </button>
+                <button
+                  type="button"
+                  className={`ui-btn px-2 py-1 ${textScaleMode === "medium" ? "ui-btn-primary" : "ui-btn-neutral"}`}
+                  onClick={() => setTextScaleMode("medium")}
+                >
+                  중
+                </button>
+                <button
+                  type="button"
+                  className={`ui-btn px-2 py-1 ${textScaleMode === "large" ? "ui-btn-primary" : "ui-btn-neutral"}`}
+                  onClick={() => setTextScaleMode("large")}
+                >
+                  대
+                </button>
+              </div>
             </div>
           </div>
         </section>
 
-        {isResourceView ? (
-          <section className="resource-ui-layout mx-auto max-w-7xl">
-            <ResourcePreviewCard
-              location={resourceLocation}
-              forgeSubTab={forgeSubTab}
-              currentHp={currentHp}
-              maxHp={maxHp}
-              attack={attack}
-              currentFloor={state.currentFloor}
-              currentStage={state.currentStage}
-              unlockedFloor={state.unlockedFloor}
-              canExplore={currentHp > 0 && !isResting && !state.isExploring}
-              isExploring={state.isExploring}
-              exploreSession={exploreSession}
-              equippedWeapon={equippedWeapon}
-              equippedArmor={equippedArmor}
-              isResting={isResting}
-              restLabel={formatAsMmSs(restRemainingSec)}
-              canUseRest={canUseRestNow && !isResting}
-              isActionLocked={state.isExploring}
-              ironOre={state.materials.ironOre}
-              steelOre={state.materials.steelOre}
-              mithril={state.materials.mithril}
-              forgeLevel={state.forgeLevel}
-              craftCost={craftCost}
-              forgeUpgradeCost={state.forgeUpgradeCost}
-              canCraftWeapon={state.materials.ironOre >= craftCost}
-              canCraftArmor={state.materials.ironOre >= craftCost}
-              canCraftSteel={canCraftSteelNow}
-              canCraftMithril={canCraftMithrilNow}
-              canUpgradeForgeAction={canUpgradeForgeNow}
-              selectedInventoryItem={selectedInventoryItem}
-              selectedTarget={forgeSlots.selectedTarget}
-              selectedMaterial={forgeSlots.selectedMaterial}
-              canSelectAsTarget={canSelectAsTarget}
-              canSelectAsMaterial={canSelectAsMaterial}
-              canForge={forgeValidation.ok}
-              forgeGuide={forgeGuide}
-              enhanceRequirementLine1={enhanceRequirementLine1}
-              enhanceRequirementLine2={enhanceRequirementLine2}
-              enhanceRequirementLine3={enhanceRequirementLine3}
-              combineRecipes={combineRecipes}
-              onCraftByRecipeId={(id) => {
-                if (id.startsWith("steel")) {
-                  dispatch({ type: "CRAFT_STEEL" });
-                  return;
-                }
-                dispatch({ type: "CRAFT_MITHRIL" });
-              }}
-              activityLogs={activityLogs}
-              actions={resourceActions}
-            />
-
-            <ForgeSideInventorySplitBox
-              ironOre={state.materials.ironOre}
-              steelOre={state.materials.steelOre}
-              mithril={state.materials.mithril}
-              inventoryItems={inventoryItems}
-              selectedInventoryItemId={resolvedSelectedInventoryItemId}
-              selectedInventoryItem={selectedInventoryItem}
-              isActionLocked={state.isExploring}
-              onSelectInventoryItem={(itemId) =>
-                setSelectedInventoryItemId((current) => toggleSelectedItemId(current, itemId))
+        <section className="resource-ui-layout mx-auto max-w-7xl">
+          <ResourcePreviewCard
+            location={resourceLocation}
+            forgeSubTab={forgeSubTab}
+            currentHp={displayedCurrentHp}
+            maxHp={maxHp}
+            attack={attack}
+            currentFloor={state.currentFloor}
+            currentStage={state.currentStage}
+            unlockedFloor={state.unlockedFloor}
+            canExplore={currentHp > 0 && !isResting && !state.isExploring}
+            isExploring={state.isExploring}
+            exploreSession={exploreSession}
+            exploreSpeedMode={exploreSpeedMode}
+            onChangeExploreSpeedMode={setExploreSpeedMode}
+            exploreCurrentEvent={exploreSession?.currentEvent ?? null}
+            exploreVisibleEvents={exploreSession?.visibleEvents ?? []}
+            equippedWeapon={equippedWeapon}
+            equippedArmor={equippedArmor}
+            isResting={isResting}
+            restLabel={formatAsMmSs(restRemainingSec)}
+            canUseRest={canUseRestNow && !isResting}
+            isActionLocked={state.isExploring}
+            ironOre={state.materials.ironOre}
+            steelOre={state.materials.steelOre}
+            mithril={state.materials.mithril}
+            forgeLevel={state.forgeLevel}
+            craftCost={craftCost}
+            forgeUpgradeCost={state.forgeUpgradeCost}
+            canCraftWeapon={state.materials.ironOre >= craftCost}
+            canCraftArmor={state.materials.ironOre >= craftCost}
+            canCraftSteel={canCraftSteelNow}
+            canCraftMithril={canCraftMithrilNow}
+            canUpgradeForgeAction={canUpgradeForgeNow}
+            selectedInventoryItem={selectedInventoryItem}
+            selectedTarget={forgeSlots.selectedTarget}
+            selectedMaterial={forgeSlots.selectedMaterial}
+            canSelectAsTarget={canSelectAsTarget}
+            canSelectAsMaterial={canSelectAsMaterial}
+            canForge={forgeValidation.ok}
+            forgeGuide={forgeGuide}
+            enhanceRequirementLine1={enhanceRequirementLine1}
+            enhanceRequirementLine2={enhanceRequirementLine2}
+            enhanceRequirementLine3={enhanceRequirementLine3}
+            enhanceBaseRate={enhanceBaseRate}
+            enhanceBonusRate={enhanceBonusRate}
+            enhanceFinalRate={enhanceFinalRate}
+            enhanceFxState={enhanceFxState}
+            combineRecipes={combineRecipes}
+            onCraftByRecipeId={(id) => {
+              if (id.startsWith("steel")) {
+                dispatch({ type: "CRAFT_STEEL" });
+                return;
               }
-            />
-          </section>
-        ) : (
-          <section className="mx-auto grid max-w-7xl gap-3 lg:grid-cols-[320px_1fr]">
-            <aside className="space-y-3">
-              <CharacterStats
-                currentHp={currentHp}
-                maxHp={maxHp}
-                attack={attack}
-                exploreCount={state.exploreCount}
-                restCount={state.restCount}
-                equippedWeapon={equippedWeapon}
-                equippedArmor={equippedArmor}
-              />
+              dispatch({ type: "CRAFT_MITHRIL" });
+            }}
+            activityLogs={activityLogs}
+            actions={resourceActions}
+          />
 
-              <section className="window-panel p-3">
-                <h2 className="window-title mb-2">여관</h2>
-                <InnPanel
-                  canUseRest={canUseRestNow && !isResting}
-                  isResting={isResting}
-                  restLabel={formatAsMmSs(restRemainingSec)}
-                  isTownLocked={state.isExploring}
-                  onRest={triggerRest}
-                  onReset={() => dispatch({ type: "RESET" })}
-                />
-              </section>
-            </aside>
-
-            <section className="window-panel p-3">
-              <div className="mb-1 flex items-center gap-2 border-b border-[color:var(--ui-border)] pb-2">
-                <button
-                  type="button"
-                  className={`ui-btn px-3 py-1.5 ${activeRightTab === "forge" ? "ui-btn-primary" : "ui-btn-neutral"}`}
-                  onClick={() => setActiveRightTab("forge")}
-                >
-                  대장간
-                </button>
-                <button
-                  type="button"
-                  className={`ui-btn px-3 py-1.5 ${activeRightTab === "explore" ? "ui-btn-primary" : "ui-btn-neutral"}`}
-                  onClick={() => setActiveRightTab("explore")}
-                >
-                  탐험
-                </button>
-              </div>
-
-              {activeRightTab === "forge" ? (
-                <div className="mt-3 space-y-3">
-                  <section className="window-panel p-3">
-                    <h2 className="window-title mb-2">대장간</h2>
-                    <ForgePanel
-                      ironOre={state.materials.ironOre}
-                      forgeLevel={state.forgeLevel}
-                      craftCost={craftCost}
-                      forgeUpgradeCost={state.forgeUpgradeCost}
-                      canCraftWeapon={state.materials.ironOre >= craftCost}
-                      canCraftArmor={state.materials.ironOre >= craftCost}
-                      canCraftSteel={canCraftSteelNow}
-                      canCraftMithril={canCraftMithrilNow}
-                      canUpgradeForgeAction={canUpgradeForgeNow}
-                      isTownLocked={state.isExploring}
-                      selectedInventoryItem={selectedInventoryItem}
-                      selectedTarget={forgeSlots.selectedTarget}
-                      selectedMaterial={forgeSlots.selectedMaterial}
-                      canSelectAsTarget={canSelectAsTarget}
-                      canSelectAsMaterial={canSelectAsMaterial}
-                      canForge={forgeValidation.ok}
-                      forgeGuide={forgeGuide}
-                      onCraftWeapon={() => dispatch({ type: "CRAFT_WEAPON" })}
-                      onCraftArmor={() => dispatch({ type: "CRAFT_ARMOR" })}
-                      onCraftSteel={() => dispatch({ type: "CRAFT_STEEL" })}
-                      onCraftMithril={() => dispatch({ type: "CRAFT_MITHRIL" })}
-                      onUpgradeForge={() => dispatch({ type: "UPGRADE_FORGE" })}
-                      onSelectAsTarget={() => {
-                        if (resolvedSelectedInventoryItemId) {
-                          forgeSlots.handleDropToForgeSlot("target", resolvedSelectedInventoryItemId);
-                        }
-                      }}
-                      onSelectAsMaterial={() => {
-                        if (resolvedSelectedInventoryItemId) {
-                          forgeSlots.handleDropToForgeSlot("material", resolvedSelectedInventoryItemId);
-                        }
-                      }}
-                      onForge={handleForge}
-                      onClearTarget={() => forgeSlots.setForgeTargetItemId(null)}
-                      onClearMaterial={() => forgeSlots.setForgeMaterialItemId(null)}
-                      onClearSlots={forgeSlots.clearSlots}
-                    />
-                  </section>
-
-                  <section className="window-panel p-3">
-                    <div className="info-line mb-2">
-                      재료: 철광석 {state.materials.ironOre} · 강철석 {state.materials.steelOre} · 미스릴 {state.materials.mithril}
-                    </div>
-                    <InventoryPanel
-                      equippedWeapon={equippedWeapon}
-                      equippedArmor={equippedArmor}
-                      inventoryItems={inventoryItems}
-                      selectedItemId={resolvedSelectedInventoryItemId}
-                      isTownLocked={state.isExploring}
-                      onSelectItem={(itemId) => setSelectedInventoryItemId((current) => toggleSelectedItemId(current, itemId))}
-                      onEquipSelectedItem={() => {
-                        if (!selectedInventoryItem) {
-                          return;
-                        }
-                        dispatch({ type: "EQUIP", itemId: selectedInventoryItem.id, slot: selectedInventoryItem.kind });
-                      }}
-                      onUnequip={(slot) => dispatch({ type: "UNEQUIP", slot })}
-                    />
-                  </section>
-                </div>
-              ) : (
-                <div className="mt-3">
-                  <ExplorePanel
-                    unlockedFloor={state.unlockedFloor}
-                    currentFloor={state.currentFloor}
-                    currentStage={state.currentStage}
-                    currentHp={currentHp}
-                    maxHp={maxHp}
-                    attack={attack}
-                    canExplore={currentHp > 0 && !isResting && !state.isExploring}
-                    isExploring={state.isExploring}
-                    onExploreStart={startExplore}
-                    onSetFloor={(floor: Floor) => dispatch({ type: "SET_FLOOR", floor })}
-                  />
-                </div>
-              )}
-            </section>
-          </section>
-        )}
+          <ForgeSideInventorySplitBox
+            ironOre={state.materials.ironOre}
+            steelOre={state.materials.steelOre}
+            mithril={state.materials.mithril}
+            inventoryItems={inventoryItems}
+            selectedInventoryItemId={resolvedSelectedInventoryItemId}
+            selectedInventoryItem={selectedInventoryItem}
+            isActionLocked={state.isExploring}
+            onSelectInventoryItem={(itemId) =>
+              setSelectedInventoryItemId((current) => toggleSelectedItemId(current, itemId))
+            }
+          />
+        </section>
       </main>
-
-      <ExploreProgressModal
-        isOpen={!isResourceView && state.isExploring}
-        currentFloor={state.currentFloor}
-        maxHp={maxHp}
-        session={exploreSession}
-        onConfirm={confirmExplore}
-      />
     </>
   );
 }

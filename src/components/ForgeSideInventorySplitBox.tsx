@@ -1,4 +1,4 @@
-import type { EquipmentItem } from "@/domain/state";
+﻿import type { EquipmentItem } from "@/domain/state";
 
 type ForgeSideInventorySplitBoxProps = {
   ironOre: number;

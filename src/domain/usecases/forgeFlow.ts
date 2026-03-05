@@ -75,6 +75,32 @@ export const enhanceEquipment = (state: GameState, targetItemId: string, materia
   };
 };
 
+export const failEnhanceMaterialDestroyed = (
+  state: GameState,
+  targetItemId: string,
+  materialItemId: string,
+): GameState => {
+  const validation = validateForge(state, targetItemId, materialItemId);
+  if (!validation.ok) {
+    return state;
+  }
+
+  const { target, material } = validation;
+  const requiredMaterials = getEnhanceMaterialCost(target.plus);
+  const equipmentItems = state.equipmentItems.filter((item) => item.id !== material.id);
+
+  return {
+    ...state,
+    materials: {
+      ironOre: state.materials.ironOre - (requiredMaterials.ironOre ?? 0),
+      steelOre: state.materials.steelOre - (requiredMaterials.steelOre ?? 0),
+      mithril: state.materials.mithril - (requiredMaterials.mithril ?? 0),
+    },
+    equipmentItems,
+    bestPlus: calcBestPlus(equipmentItems),
+  };
+};
+
 export const upgradeForge = (state: GameState): GameState => {
   if (!canUpgradeForge(state.forgeLevel)) {
     return state;

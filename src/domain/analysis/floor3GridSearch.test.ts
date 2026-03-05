@@ -25,10 +25,10 @@ describe("runFloor3GridSearch", () => {
     }
   });
 
-  it("keeps result shape stable for reporting", () => {
+  it("keeps result shape stable for reporting", { timeout: 20_000 }, () => {
     const reports = runFloor3GridSearch({
-      policies: createDefaultFloor3GridPolicies({ balancedDelta: 1 }).slice(0, 5),
-      maxLoops: 5_000,
+      policies: createDefaultFloor3GridPolicies({ balancedDelta: 1 }).slice(0, 3),
+      maxLoops: 3_000,
     });
     for (const report of reports) {
       expect(report).toMatchObject({

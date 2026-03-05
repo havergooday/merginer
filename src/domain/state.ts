@@ -31,6 +31,7 @@ export type GameState = {
   currentFloor: Floor;
   currentStage: number;
   isExploring: boolean;
+  enhanceFailStreak: number;
 };
 
 export const INITIAL_SEED = 123456789;
@@ -57,5 +58,6 @@ export const createInitialGameState = (seed: number = INITIAL_SEED): GameState =
   currentFloor: 1,
   currentStage: 0,
   isExploring: false,
+  enhanceFailStreak: 0,
 });
 

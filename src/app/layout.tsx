@@ -1,10 +1,17 @@
 ﻿import type { Metadata } from "next";
 import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const galmuri = localFont({
+  src: "../../public/assets/fonts/Galmuri9.ttf",
+  variable: "--font-galmuri",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistMono.variable} antialiased`}
+        className={`${geistMono.variable} ${galmuri.variable} antialiased`}
       >
         {children}
       </body>
