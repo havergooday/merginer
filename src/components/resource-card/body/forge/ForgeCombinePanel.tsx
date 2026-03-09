@@ -2,25 +2,33 @@
 
 type ForgeCombinePanelProps = {
   isActionLocked: boolean;
-  combineRecipes: CombineRecipe[];
+  visibleCombineRecipes: CombineRecipe[];
   selectedCombineRecipeId: CombineRecipeId;
   selectedCombineRecipe: CombineRecipe | null;
   setSelectedCombineRecipeId: (id: CombineRecipeId) => void;
+  combinePageIndex: number;
+  goPrevPage: () => void;
+  goNextPage: () => void;
+  combinePageCount: number;
   onCraftByRecipeId: (id: CombineRecipeId) => void;
 };
 
 export const ForgeCombinePanel = ({
   isActionLocked,
-  combineRecipes,
+  visibleCombineRecipes,
   selectedCombineRecipeId,
   selectedCombineRecipe,
   setSelectedCombineRecipeId,
+  combinePageIndex,
+  goPrevPage,
+  goNextPage,
+  combinePageCount,
   onCraftByRecipeId,
 }: ForgeCombinePanelProps) => (
   <div className="resource-combine-panel">
-    <div className="resource-combine-list-shell">
-      <div className="resource-combine-list">
-        {combineRecipes.map((recipe) => (
+    <div className="resource-combine-page-shell">
+      <div className="resource-combine-page-list">
+        {visibleCombineRecipes.map((recipe) => (
           <button
             key={recipe.id}
             type="button"
@@ -32,6 +40,28 @@ export const ForgeCombinePanel = ({
             <span className="resource-combine-right">{recipe.costText}</span>
           </button>
         ))}
+      </div>
+    </div>
+
+    <div className="resource-combine-page-row">
+      <div className="resource-combine-page-nav">
+        <button
+          type="button"
+          className="resource-combine-page-btn"
+          onClick={goPrevPage}
+          disabled={isActionLocked || combinePageIndex <= 0}
+        >
+          {"<"}
+        </button>
+        <span className="resource-combine-page-indicator">{String(combinePageIndex + 1).padStart(3, "0")}</span>
+        <button
+          type="button"
+          className="resource-combine-page-btn"
+          onClick={goNextPage}
+          disabled={isActionLocked || combinePageIndex >= combinePageCount - 1}
+        >
+          {">"}
+        </button>
       </div>
     </div>
 

@@ -370,6 +370,8 @@ export default function Home() {
     }
 
     if (selectedInventoryItem.kind !== slot) {
+      // If user clicks the opposite slot type, clear current selection.
+      setSelectedInventoryItemId(null);
       return;
     }
 
@@ -382,6 +384,21 @@ export default function Home() {
     }
     dispatch({ type: "UNEQUIP", slot });
   };
+
+  const handleResetGame = () => {
+    if (enhanceFxTimerRef.current !== null) {
+      window.clearTimeout(enhanceFxTimerRef.current);
+      enhanceFxTimerRef.current = null;
+    }
+    setEnhanceFxState("idle");
+    setSelectedInventoryItemId(null);
+    setResourceLocation("village");
+    setForgeSubTab("craft");
+    forgeSlots.clearSlots();
+    dispatch({ type: "RESET" });
+    pushLog("게임 상태가 초기화되었습니다.", "info");
+  };
+
   const resourceActions = {
     onGoVillage: () => setResourceLocation("village"),
     onGoInn: () => setResourceLocation("inn"),
@@ -401,21 +418,21 @@ export default function Home() {
     onCraftMithril: () => dispatch({ type: "CRAFT_MITHRIL" }),
     onUpgradeForge: () => dispatch({ type: "UPGRADE_FORGE" }),
     onClickTargetSlot: () => {
-      if (forgeSlots.selectedTarget) {
-        forgeSlots.setForgeTargetItemId(null);
-        return;
-      }
       if (resolvedSelectedInventoryItemId) {
         forgeSlots.handleDropToForgeSlot("target", resolvedSelectedInventoryItemId);
+        return;
+      }
+      if (forgeSlots.selectedTarget) {
+        forgeSlots.setForgeTargetItemId(null);
       }
     },
     onClickMaterialSlot: () => {
-      if (forgeSlots.selectedMaterial) {
-        forgeSlots.setForgeMaterialItemId(null);
-        return;
-      }
       if (resolvedSelectedInventoryItemId) {
         forgeSlots.handleDropToForgeSlot("material", resolvedSelectedInventoryItemId);
+        return;
+      }
+      if (forgeSlots.selectedMaterial) {
+        forgeSlots.setForgeMaterialItemId(null);
       }
     },
     onForge: handleForge,
@@ -450,6 +467,13 @@ export default function Home() {
                   onClick={() => setTextScaleMode("large")}
                 >
                   대
+                </button>
+                <button
+                  type="button"
+                  className="ui-btn ui-btn-danger px-2 py-1"
+                  onClick={handleResetGame}
+                >
+                  리셋
                 </button>
               </div>
             </div>

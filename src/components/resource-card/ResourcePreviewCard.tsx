@@ -6,6 +6,7 @@ import { ResourceCardNavigation } from "@/components/resource-card/ResourceCardN
 import { ResourceCardBody } from "@/components/resource-card/body/ResourceCardBody";
 import {
   getArtLabel,
+  getArtSrc,
   getBodySlotClassName,
   getExploreArtState,
   getFrameSrc,
@@ -21,6 +22,7 @@ export const ResourcePreviewCard = (props: ResourcePreviewCardProps) => {
   const headerTitle = getHeaderTitle(props);
   const headerStatus = getHeaderStatus(props);
   const artLabel = getArtLabel(props);
+  const artSrc = getArtSrc(props);
   const exploreArtState = getExploreArtState(props);
   const overlayLogs = getOverlayLogs(props);
   const isCommonNavigationLocked = getIsCommonNavigationLocked(props);
@@ -54,7 +56,7 @@ export const ResourcePreviewCard = (props: ResourcePreviewCardProps) => {
         <div className="resource-card-separator" aria-hidden />
 
         <ResourceCardArt
-          artSrc={props.artSrc}
+          artSrc={artSrc}
           artLabel={artLabel}
           overlayLogs={overlayLogs}
           exploreArtState={exploreArtState}
@@ -70,9 +72,12 @@ export const ResourcePreviewCard = (props: ResourcePreviewCardProps) => {
 
         <ResourceCardNavigation
           isCommonNavigationLocked={isCommonNavigationLocked}
+          location={props.location}
           actions={props.actions}
         />
       </div>
     </section>
   );
 };
+
+

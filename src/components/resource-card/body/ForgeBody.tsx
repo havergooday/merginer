@@ -50,8 +50,16 @@ export const ForgeBody = ({
   onCraftByRecipeId,
   actions,
 }: ForgeBodyProps) => {
-  const { selectedCombineRecipeId, setSelectedCombineRecipeId, selectedCombineRecipe } =
-    useCombineSelection(combineRecipes);
+  const {
+    selectedCombineRecipeId,
+    setSelectedCombineRecipeId,
+    selectedCombineRecipe,
+    combinePageIndex,
+    goPrevPage,
+    goNextPage,
+    combinePageCount,
+    visibleCombineRecipes,
+  } = useCombineSelection(combineRecipes);
 
   return (
     <div className="resource-forge-body">
@@ -118,10 +126,14 @@ export const ForgeBody = ({
       {forgeSubTab === "combine" ? (
         <ForgeCombinePanel
           isActionLocked={isActionLocked}
-          combineRecipes={combineRecipes}
+          visibleCombineRecipes={visibleCombineRecipes}
           selectedCombineRecipeId={selectedCombineRecipeId}
           selectedCombineRecipe={selectedCombineRecipe}
           setSelectedCombineRecipeId={setSelectedCombineRecipeId}
+          combinePageIndex={combinePageIndex}
+          goPrevPage={goPrevPage}
+          goNextPage={goNextPage}
+          combinePageCount={combinePageCount}
           onCraftByRecipeId={onCraftByRecipeId}
         />
       ) : null}

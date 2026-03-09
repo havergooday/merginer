@@ -22,7 +22,8 @@ export const VillageBody = ({
   <div className="resource-village-body" ref={villageBodyRef}>
     <div className="resource-village-layout">
       <div className="resource-village-character-box">
-        <span className="resource-village-character-label">캐릭터</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/assets/character/knight_i.png" alt="캐릭터" className="resource-village-character-image" />
       </div>
 
       <div className="resource-village-equip-stack">

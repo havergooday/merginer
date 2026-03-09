@@ -75,11 +75,17 @@ export const ResourceCardArt = ({ artSrc, artLabel, overlayLogs, exploreArtState
           )}
 
           <div className={`resource-explore-unit player state-${exploreArtState.playerState}`}>
-            <div className="resource-explore-unit-sprite">CHAR</div>
+            <div className="resource-explore-unit-sprite">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/character/knight_i.png" alt="Player" className="resource-explore-unit-image" />
+            </div>
           </div>
 
           <div className={`resource-explore-unit monster state-${exploreArtState.monsterState}`}>
-            <div className="resource-explore-unit-sprite">MON</div>
+            <div className="resource-explore-unit-sprite">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/character/Orc_i.png" alt="Monster" className="resource-explore-unit-image" />
+            </div>
             {exploreArtState.monsterState !== "hidden" && exploreArtState.monsterHpMax > 0 ? (
               <div className="resource-explore-unit-hp">
                 {exploreArtState.monsterHpCurrent}/{exploreArtState.monsterHpMax}
@@ -96,22 +102,24 @@ export const ResourceCardArt = ({ artSrc, artLabel, overlayLogs, exploreArtState
         <div className="resource-card-art-placeholder">{artLabel}</div>
       )}
 
-      <div className="resource-art-log-overlay" aria-live="polite">
-        {overlayLogs.map((entry) => (
-          <p
-            key={entry.id}
-            className={[
-              "resource-art-log-line",
-              entry.tone === "success" ? "is-success" : entry.tone === "warn" ? "is-warn" : "",
-              entry.fading ? "is-fading" : "",
-            ]
-              .join(" ")
-              .trim()}
-          >
-            {entry.text}
-          </p>
-        ))}
-      </div>
+      {overlayLogs.length > 0 ? (
+        <div className="resource-art-log-overlay" aria-live="polite">
+          {overlayLogs.map((entry) => (
+            <p
+              key={entry.id}
+              className={[
+                "resource-art-log-line",
+                entry.tone === "success" ? "is-success" : entry.tone === "warn" ? "is-warn" : "",
+                entry.fading ? "is-fading" : "",
+              ]
+                .join(" ")
+                .trim()}
+            >
+              {entry.text}
+            </p>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

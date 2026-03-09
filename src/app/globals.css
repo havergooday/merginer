@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 html {
   font-size: 17.5px;
@@ -10,11 +10,11 @@ html {
   --ui-surface-alt: #090909;
   --ui-border: #1f4a1f;
   --ui-border-strong: #2a6a2a;
-  --ui-text: #9cff9c;
-  --ui-text-dim: #5ea35e;
+  --ui-text: rgb(221, 210, 192);
+  --ui-text-dim: rgba(221, 210, 192, 0.78);
   --ui-accent: #66ff66;
   --ui-accent-2: #7cff7c;
-  --ui-good: #8dff8d;
+  --ui-good: rgb(221, 210, 192);
   --ui-warn: #ffd966;
   --ui-bad: #ff8e8e;
   --background: var(--ui-bg);
@@ -47,8 +47,8 @@ body {
 
 .window-title {
   border: 1px solid #245b24;
-  background: #031103;
-  color: #a8ffa8;
+  background: transparent;
+  color: rgb(221, 210, 192);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -58,7 +58,7 @@ body {
 
 .window-title::before {
   content: "C:\\> ";
-  color: #6ec66e;
+  color: rgb(221, 210, 192);
 }
 
 .info-line {
@@ -87,21 +87,21 @@ body {
 }
 
 .kv-label {
-  color: #6ec66e;
+  color: rgb(221, 210, 192);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
 
 .kv-value {
-  color: #a8ffa8;
+  color: rgb(221, 210, 192);
   font-size: 0.78rem;
   text-align: left;
   word-break: break-word;
 }
 
 .ui-btn {
-  border: 1px solid #2a6a2a;
+  border: 0;
   border-radius: 0;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -120,13 +120,13 @@ body {
 }
 
 .ui-btn-primary {
-  background: #031103;
-  color: #a8ffa8;
+  background: transparent;
+  color: rgb(221, 210, 192);
 }
 
 .ui-btn-secondary {
   background: #081808;
-  color: #96ff96;
+  color: rgb(221, 210, 192);
 }
 
 .ui-btn-danger {
@@ -137,7 +137,7 @@ body {
 
 .ui-btn-neutral {
   background: #020d02;
-  color: #8df58d;
+  color: rgb(221, 210, 192);
 }
 
 .ui-badge {
@@ -154,7 +154,7 @@ body {
 .ui-badge-ready {
   background: #052005;
   border-color: #2a6a2a;
-  color: #9cff9c;
+  color: rgb(221, 210, 192);
 }
 
 .ui-badge-blocked {
@@ -166,7 +166,7 @@ body {
 .ui-badge-locked {
   background: #101810;
   border-color: #395639;
-  color: #80b880;
+  color: rgb(221, 210, 192);
 }
 
 .resource-card-frame {
@@ -291,7 +291,7 @@ body {
 }
 
 .resource-card-art-slot {
-  border: 1px solid #1f4a1f;
+  border: 0;
   background: #000;
   display: grid;
   place-items: center;
@@ -317,7 +317,7 @@ body {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, #061406 0%, #030803 58%, #010401 100%);
-  color: rgba(170, 255, 170, 0.42);
+  color: rgba(221, 210, 192, 0.42);
   font-size: 0.72rem;
   display: grid;
   place-items: center;
@@ -333,9 +333,9 @@ body {
   position: absolute;
   right: 0.45rem;
   top: 0.38rem;
-  border: 1px solid #2a6a2a;
+  border: 0;
   background: rgba(3, 17, 3, 0.82);
-  color: #b9ffb9;
+  color: rgb(221, 210, 192);
   font-size: 0.72rem;
   line-height: 1;
   padding: 0.18rem 0.3rem;
@@ -362,13 +362,20 @@ body {
 .resource-explore-unit-sprite {
   width: 100%;
   height: 100%;
-  border: 1px solid #2a6a2a;
+  border: 0;
   background: rgba(2, 15, 2, 0.74);
-  color: #b9ffb9;
+  color: rgb(221, 210, 192);
   font-size: 0.82rem;
   display: grid;
   place-items: center;
   letter-spacing: 0.06em;
+}
+
+.resource-explore-unit-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .resource-explore-unit-hp {
@@ -530,7 +537,7 @@ body {
 }
 
 .resource-card-art-placeholder {
-  color: #5ea35e;
+  color: rgb(221, 210, 192);
   font-size: 0.75rem;
   letter-spacing: 0.03em;
 }
@@ -541,7 +548,7 @@ body {
   right: 0.35rem;
   bottom: 0.35rem;
   min-height: 3rem;
-  border: 1px solid #1f4a1f;
+  border: 0;
   background: rgba(0, 0, 0, 0.78);
   padding: 0.2rem 0.28rem;
   display: grid;
@@ -550,7 +557,7 @@ body {
 }
 
 .resource-art-log-line {
-  color: #9cff9c;
+  color: rgb(221, 210, 192);
   font-size: 0.74rem;
   line-height: 1.2;
   white-space: nowrap;
@@ -560,7 +567,7 @@ body {
 }
 
 .resource-art-log-line.is-success {
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
 }
 
 .resource-art-log-line.is-warn {
@@ -610,12 +617,12 @@ body {
 }
 
 .resource-card-stat-row > span:first-child {
-  color: #6ec66e;
+  color: rgb(221, 210, 192);
   letter-spacing: 0.03em;
 }
 
 .resource-card-stat-row > span:last-child {
-  color: #a8ffa8;
+  color: rgb(221, 210, 192);
 }
 
 .resource-card-equip-row {
@@ -627,12 +634,12 @@ body {
   padding: 0.16rem 0.3rem;
   min-height: 1.55rem;
   font-size: 0.8rem;
-  color: #a8ffa8;
+  color: rgb(221, 210, 192);
   text-align: left;
 }
 
 .resource-card-equip-row > span:first-child {
-  color: #6ec66e;
+  color: rgb(221, 210, 192);
   letter-spacing: 0.03em;
 }
 
@@ -684,9 +691,16 @@ body {
 }
 
 .resource-village-character-label {
-  color: #7ecf7e;
+  color: rgb(221, 210, 192);
   font-size: 0.76rem;
   letter-spacing: 0.03em;
+}
+
+.resource-village-character-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .resource-village-equip-slot {
@@ -708,13 +722,13 @@ body {
 }
 
 .resource-village-slot-label {
-  color: #6ec66e;
+  color: rgb(221, 210, 192);
   font-size: 0.72rem;
   letter-spacing: 0.03em;
 }
 
 .resource-village-slot-plus {
-  color: #a8ffa8;
+  color: rgb(221, 210, 192);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -753,6 +767,25 @@ body {
   height: 100%;
 }
 
+.resource-inn-rest-btn,
+.resource-inn-upgrade-btn {
+  --inn-rest-btn-src: url("/assets/ui/buttons/normal_btn.png");
+  border: 0;
+  background-image: var(--inn-rest-btn-src) !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-inn-rest-btn:disabled,
+.resource-inn-upgrade-btn:disabled {
+  filter: grayscale(0.9) brightness(0.72);
+}
+
 .resource-inn-npc-box {
   border: 1px solid #245b24;
   background: #040b04;
@@ -760,46 +793,78 @@ body {
   height: 100%;
   display: grid;
   place-items: center;
+  overflow: hidden;
 }
 
 .resource-inn-npc-label {
-  color: #7ecf7e;
+  color: rgb(221, 210, 192);
   font-size: 0.8rem;
   letter-spacing: 0.03em;
 }
 
+.resource-inn-npc-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 .resource-card-utility-slot {
+  --nav-btn-active-src: url("/assets/ui/buttons/nav-active.png");
+  --nav-btn-inactive-src: url("/assets/ui/buttons/nav-inactive.png");
   display: flex;
   justify-content: stretch;
   align-items: center;
   flex-wrap: nowrap;
   gap: 0.28rem;
   width: 100%;
-  min-height: 2.72rem;
+  min-height: 2.92rem;
 }
-
 .resource-card-utility-btn {
-  border: 1px solid #2a6a2a;
-  background: #031103;
-  color: #8df58d;
-  font-size: 0.84rem;
-  padding: 0.28rem 0.34rem;
-  min-height: 2.02rem;
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.34rem 0.4rem;
+  min-height: 2.24rem;
   flex: 1 1 0;
   min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  line-height: 1;
+  transform: translateY(-6px);
+  isolation: isolate;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-card-utility-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--nav-btn-inactive-src);
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+.resource-card-utility-btn.is-current::before {
+  background-image: var(--nav-btn-active-src);
 }
 
 .resource-card-utility-btn.is-locked {
-  background: #060606;
-  border-color: #4a4a4a;
-  color: #6d806d;
   cursor: not-allowed;
 }
 
 .resource-card-utility-btn.is-locked:disabled {
-  opacity: 0.82;
-  filter: saturate(0.65) brightness(0.8);
+  opacity: 0.9;
+  filter: grayscale(1) brightness(0.72);
 }
 
 @media (max-width: 640px) {
@@ -851,9 +916,9 @@ body {
 }
 
 .resource-card-action-btn {
-  border: 1px solid #2a6a2a;
-  background: #031103;
-  color: #8df58d;
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
   font-size: 0.8rem;
   padding: 0.24rem 0.38rem;
   min-height: 1.7rem;
@@ -876,9 +941,9 @@ body {
 }
 
 .resource-forge-tab {
-  border: 1px solid #2a6a2a;
-  background: #031103;
-  color: #8df58d;
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
   font-size: 0.78rem;
   padding: 0.24rem 0.34rem;
   min-height: 1.7rem;
@@ -887,7 +952,7 @@ body {
 
 .resource-forge-tab.is-active {
   background: #0b2a0b;
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
   border-color: #66ff66;
   box-shadow: inset 0 0 0 1px rgba(102, 255, 102, 0.28);
 }
@@ -932,7 +997,7 @@ body {
 .resource-craft-preview-box {
   border: 1px solid #245b24;
   background: #040b04;
-  color: #7ecf7e;
+  color: rgb(221, 210, 192);
   font-size: 0.78rem;
   letter-spacing: 0.03em;
   display: grid;
@@ -952,7 +1017,7 @@ body {
 }
 
 .resource-craft-info-row {
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
   font-size: 0.8rem;
   line-height: 1.2;
 }
@@ -964,7 +1029,7 @@ body {
 }
 
 .resource-craft-guide-line {
-  color: #6fb06f;
+  color: rgb(221, 210, 192);
   font-size: 0.7rem;
   line-height: 1.18;
 }
@@ -988,8 +1053,11 @@ body {
 }
 
 .resource-side-box {
-  border: 1px solid #245b24;
-  background: linear-gradient(180deg, #050b05 0%, #020802 100%);
+  border: 0;
+  background-image: url("/assets/ui/frames/inventory_frame.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 0.45rem;
   min-height: 360px;
 }
@@ -1002,8 +1070,11 @@ body {
 }
 
 .resource-side-material-box {
-  border: 1px solid #245b24;
-  background: linear-gradient(180deg, #050b05 0%, #020802 100%);
+  border: 1px solid rgb(221, 210, 192);
+  background-image: url("/assets/ui/backgrounds/node_panel.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 0.45rem;
 }
 
@@ -1014,8 +1085,8 @@ body {
 }
 
 .resource-side-box-title {
-  color: #9cff9c;
-  font-size: 0.84rem;
+  color: rgb(221, 210, 192);
+  font-size: 0.9rem;
   letter-spacing: 0.03em;
   text-transform: uppercase;
   text-align: center;
@@ -1042,8 +1113,8 @@ body {
 
 .resource-side-section-tab {
   border-bottom: 1px solid #1f4a1f;
-  background: #031103;
-  color: #8df58d;
+  background: transparent;
+  color: rgb(221, 210, 192);
   font-size: 0.76rem;
   letter-spacing: 0.03em;
   text-align: center;
@@ -1051,22 +1122,30 @@ body {
 }
 
 .resource-side-tab {
-  border: 1px solid #2a6a2a;
-  background: #031103;
-  color: #8df58d;
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
   font-size: 0.78rem;
   padding: 0.26rem 0.35rem;
 }
 
 .resource-side-tab.is-active {
   background: #0b2a0b;
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
 }
 
 .resource-side-body {
   display: grid;
   gap: 0.28rem;
   padding: 0.3rem;
+}
+
+.resource-side-box .resource-side-body {
+  background: rgba(0, 0, 0, 0.26);
+}
+
+.resource-side-material-box .resource-side-body {
+  background: transparent;
 }
 
 .resource-side-inline-actions {
@@ -1096,9 +1175,9 @@ body {
 }
 
 .resource-side-item {
-  border: 1px solid #1f4a1f;
+  border: 1px solid rgb(221, 210, 192);
   background: #030803;
-  color: #a8ffa8;
+  color: rgb(221, 210, 192);
   font-size: 0.78rem;
   padding: 0.32rem 0.38rem;
   display: flex;
@@ -1115,13 +1194,15 @@ body {
   display: block;
   padding: 0;
   overflow: hidden;
+  filter: brightness(0.82);
+  transition: filter 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
 }
 
 .resource-side-item-equip-plus {
   position: absolute;
   top: 0.14rem;
   right: 0.18rem;
-  color: #e8ffe8;
+  color: rgb(221, 210, 192);
   font-size: 0.9rem;
   font-weight: 700;
   line-height: 1;
@@ -1134,12 +1215,15 @@ body {
   position: absolute;
   inset: 0;
   border: 0;
-  background: #081408;
-  display: grid;
-  place-items: center;
-  color: #6fb06f;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
+  background: #2f2f2f;
+  display: block;
+}
+
+.resource-side-item-equip-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .resource-side-item-equip-label {
@@ -1148,7 +1232,7 @@ body {
   right: 0.2rem;
   bottom: 0.2rem;
   text-align: center;
-  color: #d5ffd5;
+  color: rgb(221, 210, 192);
   font-size: 0.72rem;
   line-height: 1;
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.95);
@@ -1157,8 +1241,12 @@ body {
 }
 
 .resource-side-item.is-selected {
-  border-color: #66ff66;
-  box-shadow: inset 0 0 0 1px rgba(102, 255, 102, 0.35);
+  border-color: rgb(221, 210, 192);
+  box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.45);
+}
+
+.resource-side-item-equip.is-selected {
+  filter: brightness(1.12);
 }
 
 @media (max-width: 960px) {
@@ -1174,40 +1262,42 @@ body {
 
 .resource-enhance-panel {
   display: grid;
-  grid-template-rows: auto auto auto;
-  gap: 0.28rem;
+  grid-template-rows: minmax(0, 0.8fr) minmax(0, 1.08fr) auto;
+  gap: 0.16rem;
   min-height: 100%;
-  padding: 0.64rem 0.86rem 0.72rem;
+  padding: 0.38rem 0.58rem 0.38rem;
   box-sizing: border-box;
 }
 
 .resource-enhance-slots {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.58rem;
+  gap: 0.32rem;
   padding: 0;
   margin: 0;
 }
 
 .resource-enhance-slot-col {
   display: grid;
-  gap: 0.24rem;
-  padding: 0.26rem;
+  gap: 0.12rem;
+  padding: 0.1rem;
 }
 
 .resource-enhance-slot-box {
-  border: 1px solid #1f4a1f;
-  background: #030803;
-  min-height: 52px;
-  padding: 0.54rem 0.52rem;
-  display: grid;
-  align-content: start;
-  gap: 0.12rem;
+  border: 0;
+  min-height: 34px;
+  padding: 0.24rem 0.28rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.08rem;
 }
 
 .resource-enhance-slot-box-btn {
   width: 100%;
-  text-align: left;
+  text-align: center;
 }
 
 .resource-enhance-slot-box-btn:disabled {
@@ -1216,25 +1306,27 @@ body {
 }
 
 .resource-enhance-slot-title {
-  color: #6ec66e;
-  font-size: 0.78rem;
+  color: rgb(221, 210, 192);
+  font-size: 0.74rem;
   letter-spacing: 0.03em;
 }
 
 .resource-enhance-slot-value {
-  color: #a8ffa8;
-  font-size: 0.8rem;
+  color: rgb(221, 210, 192);
+  font-size: 0.74rem;
   word-break: break-word;
 }
 
 .resource-enhance-requirement {
-  border: 1px solid #1f4a1f;
+  border: 0;
   background: rgba(3, 8, 3, 0.9);
-  color: #8fda8f;
-  font-size: 0.78rem;
-  line-height: 1.2;
-  padding: 0.3rem 0.42rem;
-  margin-top: 0.04rem;
+  color: rgb(221, 210, 192);
+  font-size: 0.72rem;
+  line-height: 1.14;
+  padding: 0.2rem 0.32rem;
+  margin-top: 0;
+  max-height: 5.9rem;
+  overflow: hidden;
 }
 
 .resource-enhance-requirement p {
@@ -1242,10 +1334,10 @@ body {
 }
 
 .resource-enhance-reason {
-  margin-top: 0.1rem !important;
+  margin-top: 0.06rem !important;
   color: var(--ui-warn);
-  font-size: 0.74rem;
-  line-height: 1.18;
+  font-size: 0.68rem;
+  line-height: 1.1;
 }
 
 .resource-enhance-reason.is-ready {
@@ -1253,70 +1345,98 @@ body {
 }
 
 .resource-enhance-execute-btn {
-  min-height: 3.2rem !important;
-  font-size: 0.98rem;
-  color: #8df58d;
+  min-height: 2.18rem !important;
+  font-size: 0.86rem;
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/normal_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192);
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
   white-space: nowrap;
   text-align: center !important;
   line-height: 1 !important;
-  padding: 0.52rem 0.65rem;
+  padding: 0.22rem 0.46rem;
   letter-spacing: 0.02em;
-  margin: 0.1rem 0 0.12rem 0 !important;
+  margin: 0.02rem 0 0 !important;
+  transition: transform 70ms ease, filter 70ms ease;
+}
+
+.resource-enhance-execute-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
+  filter: brightness(0.86);
+}
+
+.resource-enhance-rate {
+  font-size: 0.66rem;
+  line-height: 1.08;
+}
+
+.resource-enhance-rate.is-final {
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
 .resource-combine-panel {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  gap: 0.42rem;
+  grid-template-rows: minmax(0, 1fr) 1.55rem auto;
+  gap: 0.26rem;
   min-height: 100%;
   height: 100%;
-  padding: 0.5rem 0.62rem 0.5rem;
+  padding: 0.38rem 0.52rem 0.34rem;
   box-sizing: border-box;
 }
 
-.resource-combine-list-shell {
-  border: 1px solid #1f4a1f;
+.resource-combine-page-shell {
+  border: 0;
   background: #030803;
   min-height: 0;
   overflow: hidden;
-  padding: 0.34rem;
+  padding: 0.26rem;
 }
 
-.resource-combine-list {
+.resource-combine-page-list {
   height: 100%;
-  overflow-y: auto;
   display: grid;
-  gap: 0.22rem;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 0.2rem;
 }
 
 .resource-combine-row {
-  border: 1px solid #245b24;
-  background: #041004;
-  color: #8df58d;
+  border: 1px solid rgb(221, 210, 192);
+  background-image: url("/assets/ui/backgrounds/node_panel.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: rgb(221, 210, 192);
   font-size: 0.78rem;
-  min-height: 1.3rem;
+  min-height: 1.22rem;
   padding: 0.2rem 0.3rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 0.33rem;
   text-align: left;
+  transition: filter 120ms ease, box-shadow 120ms ease, transform 120ms ease;
 }
 
 .resource-combine-row.is-selected {
-  border-color: #66ff66;
-  box-shadow: inset 0 0 0 1px rgba(102, 255, 102, 0.3);
+  border-color: rgb(236, 227, 210);
+  filter: brightness(1.18) saturate(1.08);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 243, 220, 0.45),
+    0 0 8px rgba(255, 236, 198, 0.28);
 }
 
 .resource-combine-left {
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
 }
 
 .resource-combine-right {
-  color: #7ecf7e;
+  color: rgb(221, 210, 192);
   white-space: nowrap;
   font-size: 0.75rem;
 }
@@ -1326,8 +1446,42 @@ body {
   gap: 0.24rem;
 }
 
+.resource-combine-page-row {
+  display: grid;
+  align-items: center;
+}
+
+.resource-combine-page-nav {
+  width: fit-content;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.8rem auto 1.8rem;
+  gap: 0.28rem;
+  align-items: center;
+}
+
+.resource-combine-page-btn {
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
+  min-height: 1.35rem;
+  font-weight: 700;
+}
+
+.resource-combine-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.resource-combine-page-indicator {
+  min-width: 2.6rem;
+  text-align: center;
+  font-size: 0.74rem;
+  color: rgb(221, 210, 192);
+}
+
 .resource-combine-status {
-  border: 1px solid #1f4a1f;
+  border: 0;
   background: rgba(3, 8, 3, 0.9);
   color: var(--ui-warn);
   font-size: 0.76rem;
@@ -1342,6 +1496,19 @@ body {
 
 .resource-combine-craft-btn {
   min-height: 2.12rem !important;
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/normal_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  transition: transform 70ms ease, filter 70ms ease;
+}
+
+.resource-combine-craft-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
+  filter: brightness(0.86);
 }
 
 .resource-explore-panel {
@@ -1387,7 +1554,7 @@ body {
   max-height: 100%;
   border: 1px solid #245b24;
   background: #041004;
-  color: #8df58d;
+  color: rgb(221, 210, 192);
   display: flex;
   align-items: center;
   gap: 0.26rem;
@@ -1397,8 +1564,11 @@ body {
 }
 
 .resource-explore-floor-banner.is-selected {
-  border-color: #66ff66;
-  box-shadow: inset 0 0 0 1px rgba(102, 255, 102, 0.3);
+  border-color: rgb(221, 210, 192);
+  box-shadow:
+    inset 0 0 0 1px rgb(221, 210, 192),
+    0 0 8px rgba(221, 210, 192, 0.24);
+  filter: brightness(1.12);
 }
 
 .resource-explore-floor-banner.is-blocked {
@@ -1416,7 +1586,7 @@ body {
 }
 
 .resource-explore-floor-title {
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
   font-size: 0.82rem;
   line-height: 1.1;
   white-space: nowrap;
@@ -1425,7 +1595,7 @@ body {
 }
 
 .resource-explore-floor-status {
-  color: #7ecf7e;
+  color: rgb(221, 210, 192);
   font-size: 0.72rem;
   line-height: 1.1;
   white-space: nowrap;
@@ -1453,9 +1623,9 @@ body {
 }
 
 .resource-explore-page-btn {
-  border: 1px solid #2a6a2a;
-  background: #031103;
-  color: #8df58d;
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
   min-height: 1.35rem;
   font-size: 0.72rem;
 }
@@ -1466,9 +1636,12 @@ body {
 }
 
 .resource-explore-page-indicator {
-  border: 1px solid #1f4a1f;
-  background: #030803;
-  color: #a8ffa8;
+  border: 0;
+  background-image: url("/assets/ui/backgrounds/node_panel.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: rgb(221, 210, 192);
   min-height: 1.35rem;
   display: grid;
   place-items: center;
@@ -1480,6 +1653,19 @@ body {
   min-height: 1.88rem !important;
   font-size: 0.78rem;
   align-self: stretch;
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/normal_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  transition: transform 70ms ease, filter 70ms ease;
+}
+
+.resource-explore-start-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
+  filter: brightness(0.86);
 }
 
 .resource-explore-start-row {
@@ -1498,7 +1684,10 @@ body {
 
 .resource-explore-result-box {
   border: 1px solid #1f4a1f;
-  background: #030803;
+  background-image: url("/assets/ui/backgrounds/metal_panel.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
   padding: 0.6rem 0.62rem;
   display: grid;
   gap: 0.34rem;
@@ -1511,6 +1700,19 @@ body {
   min-height: 2.16rem !important;
   margin-top: auto;
   margin-bottom: 0.2rem;
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/normal_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  transition: transform 70ms ease, filter 70ms ease;
+}
+
+.resource-explore-result-confirm-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
+  filter: brightness(0.86);
 }
 
 .resource-explore-progress-simple {
@@ -1518,7 +1720,7 @@ body {
   height: 100%;
   display: grid;
   place-items: center;
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
   font-size: 1rem;
   letter-spacing: 0.04em;
 }
@@ -1529,8 +1731,8 @@ body {
   display: grid;
   grid-template-rows: 1fr auto;
   gap: 0.36rem;
-  border: 1px solid #1f4a1f;
-  background: #030803;
+  border: 1px solid rgb(221, 210, 192);
+  background: rgba(48, 48, 48, 0.72);
   padding: 0.6rem 0.68rem;
 }
 
@@ -1539,7 +1741,7 @@ body {
   display: grid;
   place-items: center;
   text-align: center;
-  color: #b4ffb4;
+  color: rgb(221, 210, 192);
   font-size: 0.94rem;
   line-height: 1.3;
   letter-spacing: 0.02em;
@@ -1552,20 +1754,35 @@ body {
 }
 
 .resource-explore-speed-btn {
-  border: 1px solid #2a6a2a;
-  background: #031103;
-  color: #8df58d;
+  border: 0;
+  background-image: url("/assets/ui/buttons/nav-inactive.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: rgb(221, 210, 192);
   min-height: 1.76rem;
   font-size: 0.74rem;
   padding: 0.16rem 0.2rem;
   white-space: nowrap;
   text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+  transition: transform 70ms ease, filter 70ms ease;
 }
 
 .resource-explore-speed-btn.is-active {
-  border-color: #66ff66;
-  color: #d7ffd7;
-  background: #0a240a;
+  background-image: url("/assets/ui/buttons/nav-active.png");
+  color: rgb(221, 210, 192);
+  filter: brightness(1.06);
+}
+
+.resource-explore-speed-btn:disabled {
+  opacity: 0.58;
+  filter: grayscale(1) brightness(0.7);
+}
+
+.resource-explore-speed-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.995);
+  filter: brightness(0.9);
 }
 
 .explore-fx-entry {
@@ -1594,25 +1811,25 @@ body {
 
 @keyframes explorePulse {
   0% {
-    box-shadow: inset 0 0 0 1px rgba(114, 214, 114, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.12);
   }
   50% {
-    box-shadow: inset 0 0 0 1px rgba(114, 214, 114, 0.35);
+    box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.32);
   }
   100% {
-    box-shadow: inset 0 0 0 1px rgba(114, 214, 114, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.12);
   }
 }
 
 @keyframes exploreFlashPlayer {
   0% {
-    background: #030803;
+    background: rgba(48, 48, 48, 0.72);
   }
   45% {
-    background: rgba(28, 74, 52, 0.55);
+    background: rgba(128, 128, 128, 0.46);
   }
   100% {
-    background: #030803;
+    background: rgba(48, 48, 48, 0.72);
   }
 }
 
@@ -1630,10 +1847,10 @@ body {
 
 @keyframes exploreSweepClear {
   0% {
-    box-shadow: inset -160px 0 0 rgba(140, 255, 140, 0.15);
+    box-shadow: inset -160px 0 0 rgba(221, 210, 192, 0.2);
   }
   100% {
-    box-shadow: inset 160px 0 0 rgba(140, 255, 140, 0);
+    box-shadow: inset 160px 0 0 rgba(221, 210, 192, 0);
   }
 }
 
@@ -1692,4 +1909,271 @@ body {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+/* Body single-background override (village/inn/forge/explore) */
+.resource-card-body-slot {
+  border: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.3) 100%),
+    url("/assets/ui/backgrounds/body-bg.png") center / cover no-repeat !important;
+}
+
+.resource-card-body-slot.is-village,
+.resource-card-body-slot.is-inn,
+.resource-card-body-slot.is-forge,
+.resource-card-body-slot.is-explore {
+  border: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.3) 100%),
+    url("/assets/ui/backgrounds/body-bg.png") center / cover no-repeat !important;
+}
+
+.resource-card-body-slot .resource-card-stat-row,
+.resource-card-body-slot .resource-card-equip-row,
+.resource-card-body-slot .resource-village-character-box,
+.resource-card-body-slot .resource-village-equip-slot,
+.resource-card-body-slot .resource-inn-npc-box,
+.resource-card-body-slot .resource-enhance-slot-box,
+.resource-card-body-slot .resource-combine-list-shell,
+.resource-card-body-slot .resource-explore-floor-list-shell,
+.resource-card-body-slot .resource-explore-floor-banner,
+.resource-card-body-slot .resource-explore-result-box {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.resource-card-body-slot .resource-village-equip-slot.is-pending-unequip {
+  border: 0 !important;
+  background: rgba(255, 217, 102, 0.14) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 217, 102, 0.38) !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner.is-selected {
+  border: 0 !important;
+  box-shadow:
+    inset 0 0 0 1px rgb(221, 210, 192),
+    0 0 8px rgba(221, 210, 192, 0.28) !important;
+  background: transparent !important;
+  filter: brightness(1.14) !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner.is-blocked {
+  border: 0 !important;
+  background: rgba(32, 32, 32, 0.28) !important;
+}
+
+/* Explore floor cards skin override */
+.resource-card-body-slot .resource-explore-floor-list-shell {
+  border: 0 !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner {
+  border: 0 !important;
+  background-image: url("/assets/ui/backgrounds/node_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner.is-selected {
+  box-shadow:
+    inset 0 0 0 1px rgb(221, 210, 192),
+    0 0 8px rgba(221, 210, 192, 0.28) !important;
+  filter: brightness(1.14) !important;
+}
+
+/* Body background visibility override */
+.resource-card-body-slot,
+.resource-card-body-slot.is-village,
+.resource-card-body-slot.is-inn,
+.resource-card-body-slot.is-forge,
+.resource-card-body-slot.is-explore {
+  background-image: url("/assets/ui/backgrounds/body-bg.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+}
+
+.resource-card-body-slot .resource-forge-tab,
+.resource-card-body-slot .resource-card-stat-row,
+.resource-card-body-slot .resource-card-equip-row,
+.resource-card-body-slot .resource-village-character-box,
+.resource-card-body-slot .resource-village-equip-slot,
+.resource-card-body-slot .resource-inn-npc-box,
+.resource-card-body-slot .resource-enhance-slot-box,
+.resource-card-body-slot .resource-combine-list-shell,
+.resource-card-body-slot .resource-explore-floor-list-shell,
+.resource-card-body-slot .resource-explore-floor-banner,
+.resource-card-body-slot .resource-explore-result-box {
+  background-color: transparent !important;
+}
+
+/* Village equipment slot frame skin (darkened) */
+.resource-card-body-slot .resource-village-equip-slot {
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.44) 0%, rgba(0, 0, 0, 0.5) 100%),
+    url("/assets/ui/frames/equip_bg.png") !important;
+  background-size: 100% 100%, 100% 100% !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-color: transparent !important;
+}
+
+.resource-card-body-slot .resource-village-equip-slot.is-pending-unequip {
+  background-image:
+    linear-gradient(180deg, rgba(218, 224, 230, 0.22) 0%, rgba(118, 124, 132, 0.28) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.36) 0%, rgba(0, 0, 0, 0.44) 100%),
+    url("/assets/ui/frames/equip_bg.png") !important;
+  background-size: 100% 100%, 100% 100%, 100% 100% !important;
+  background-position: center, center, center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat !important;
+}
+
+/* Forge skin overrides */
+.resource-forge-tab {
+  position: relative;
+  overflow: hidden;
+  border: 0 !important;
+  background: transparent !important;
+  color: rgb(221, 210, 192) !important;
+  isolation: isolate;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-forge-tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/ui/buttons/nav-inactive.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+.resource-forge-tab.is-active {
+  box-shadow: none !important;
+}
+
+.resource-forge-tab.is-active::before {
+  background-image: url("/assets/ui/buttons/nav-active.png");
+}
+
+.resource-craft-top-row .resource-card-action-btn {
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/craft_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-craft-upgrade-btn {
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/normal_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-craft-preview-box {
+  border: 0 !important;
+  background-image: url("/assets/ui/backgrounds/metal_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Ensure forge cost panel image stays visible over transparent overrides */
+.resource-card-body-slot .resource-craft-preview-box {
+  background-image: url("/assets/ui/backgrounds/metal_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(8, 8, 8, 0.34) !important;
+  box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.2) !important;
+}
+
+/* Ensure explore result panel image stays visible over transparent overrides */
+.resource-card-body-slot .resource-explore-result-box {
+  background-image: url("/assets/ui/backgrounds/metal_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(8, 8, 8, 0.34) !important;
+}
+
+/* Forge enhance slots: equip background skin */
+.resource-card-body-slot .resource-enhance-slot-box {
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.18) 100%),
+    url("/assets/ui/frames/equip_bg.png") !important;
+  background-size: 100% 100%, 100% 100% !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-color: transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.16) !important;
+}
+
+/* Body blur tone (about 1/3 softer) */
+.resource-card-body-slot,
+.resource-card-body-slot.is-village,
+.resource-card-body-slot.is-inn,
+.resource-card-body-slot.is-forge,
+.resource-card-body-slot.is-explore {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: none !important;
+}
+
+.resource-card-body-slot::before,
+.resource-card-body-slot.is-village::before,
+.resource-card-body-slot.is-inn::before,
+.resource-card-body-slot.is-forge::before,
+.resource-card-body-slot.is-explore::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/ui/backgrounds/body-bg.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(0.92);
+  opacity: 0.2;
+  transform: scale(1.02);
+  transform-origin: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.resource-card-body-slot > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Art/log border hard override */
+.resource-card-art-slot {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.resource-art-log-overlay {
+  border: 0 !important;
+}
 

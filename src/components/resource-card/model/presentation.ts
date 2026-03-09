@@ -24,6 +24,22 @@ export const getArtLabel = (props: ResourcePreviewCardProps): string => {
   return "EXPLORE";
 };
 
+export const getArtSrc = (props: ResourcePreviewCardProps): string => {
+  if (props.location === "village") {
+    return "/assets/ui/backgrounds/main_village.png";
+  }
+  if (props.location === "inn") {
+    return "/assets/ui/backgrounds/main_inn.png";
+  }
+  if (props.location === "forge") {
+    return "/assets/ui/backgrounds/main_forge.png";
+  }
+
+  const floorBase = props.exploreCurrentEvent?.floor ?? props.currentFloor;
+  const clampedFloor = Math.min(3, Math.max(1, floorBase));
+  return `/assets/ui/backgrounds/main_dungeon_${clampedFloor}.png`;
+};
+
 export const getHeaderTitle = (props: ResourcePreviewCardProps): string => {
   if (props.location === "explore" && props.isExploring) {
     return `탐사 - ${props.currentFloor}층`;
@@ -37,6 +53,10 @@ export const getHeaderStatus = (props: ResourcePreviewCardProps): string =>
   ).padStart(3, "0")}`;
 
 export const getOverlayLogs = (props: ResourcePreviewCardProps): OverlayLogEntry[] => {
+  if (props.location === "village" || props.location === "inn") {
+    return [];
+  }
+
   if (props.location === "explore" && props.isExploring && props.exploreSession) {
     if (props.exploreVisibleEvents.length > 0) {
       return props.exploreVisibleEvents.slice(-3).map((event) => ({

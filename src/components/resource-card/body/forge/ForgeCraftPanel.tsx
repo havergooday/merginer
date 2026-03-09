@@ -44,7 +44,7 @@ export const ForgeCraftPanel = ({
       <div className="resource-craft-preview-box">
         <div className="resource-craft-info-section">
           <p className="resource-craft-info-row">제작 비용: 철광석 {craftCost}</p>
-          <p className="resource-craft-info-row">강화 비용: 철광석 {forgeUpgradeCost}</p>
+          <p className="resource-craft-info-row">대장간 강화 비용: 철광석 {forgeUpgradeCost}</p>
         </div>
         <div className="resource-craft-guide-section">
           <p className="resource-craft-guide-line">대장간 강화 시 제작 비용이 감소합니다.</p>

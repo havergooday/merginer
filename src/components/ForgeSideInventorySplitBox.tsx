@@ -13,6 +13,8 @@ type ForgeSideInventorySplitBoxProps = {
 
 const equipmentLabel = (item: EquipmentItem) => `${item.kind === "weapon" ? "검" : "갑옷"} +${item.plus}`;
 const equipmentKindLabel = (item: EquipmentItem) => (item.kind === "weapon" ? "검" : "갑옷");
+const equipmentIconSrc = (item: EquipmentItem) =>
+  item.kind === "weapon" ? "/assets/ui/icon/icon_weapon.png" : "/assets/ui/icon/icon_armor.png";
 
 export const ForgeSideInventorySplitBox = ({
   ironOre,
@@ -51,7 +53,7 @@ export const ForgeSideInventorySplitBox = ({
                 >
                   <span className="resource-side-item-equip-plus">+{item.plus}</span>
                   <span className="resource-side-item-equip-sprite" aria-hidden>
-                    {equipmentKindLabel(item)}
+                    <img className="resource-side-item-equip-image" src={equipmentIconSrc(item)} alt="" />
                   </span>
                   <span className="resource-side-item-equip-label">{equipmentKindLabel(item)}</span>
                 </button>

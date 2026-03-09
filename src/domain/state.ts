@@ -1,4 +1,4 @@
-﻿export type EquipmentKind = "weapon" | "armor";
+export type EquipmentKind = "weapon" | "armor";
 
 export type EquipmentItem = {
   id: string;
@@ -39,7 +39,7 @@ export const INITIAL_HP = 10;
 
 export const createInitialGameState = (seed: number = INITIAL_SEED): GameState => ({
   materials: {
-    ironOre: 20000,
+    ironOre: 0,
     steelOre: 0,
     mithril: 0,
   },
