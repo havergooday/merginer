@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-03-11T06:32:29.324Z",
+  "config": {
+    "preset": "all",
+    "sessionsPerPolicy": 50,
+    "maxLoops": 10000,
+    "seedBase": 20260310,
+    "initialStateOverride": {
+      "ironOre": 0,
+      "unlockedFloor": 1
+    }
+  },
+  "summaryRowCount": 150,
+  "traceRowCount": 81301,
+  "decisionTrace": {
+    "enabled": false,
+    "rowCount": 0,
+    "path": "D:\\Project\\merginer\\reports\\balance\\decision-trace.jsonl"
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "generatedAt": "2026-03-10T01:57:16.112Z",
+  "input": "D:\\Project\\merginer\\reports\\balance\\summary.csv",
+  "rows": 30,
+  "sampleMode": "phase1_lightweight",
+  "interpretation": "directional",
+  "overallStatus": "fail",
+  "contentCycleStatus": "fail",
+  "contentCycleChecks": {
+    "midTierEntry": {
+      "value": 0,
+      "status": "fail"
+    },
+    "plus6TimeP50": {
+      "value": 1000440,
+      "status": "fail"
+    },
+    "plus6ReachRate": {
+      "value": 0.8333333333333334,
+      "status": "pass"
+    },
+    "pairMissingDrop": {
+      "value": 0.7201503053076562,
+      "status": "pass"
+    },
+    "stagnationAbortTrend": {
+      "value": 0,
+      "status": "fail"
+    },
+    "weaponArmorCraftRatio": {
+      "value": 0.9718383311603651,
+      "status": "pass"
+    },
+    "conversionActivation": {
+      "value": 0,
+      "status": "fail",
+      "mode": "diagnostic_only"
+    },
+    "clearRateTrend": {
+      "value": 0,
+      "mode": "trend_only"
+    }
+  },
+  "checks": {
+    "clearRate": {
+      "value": 0,
+      "status": "fail"
+    },
+    "abortedRate": {
+      "value": 0,
+      "status": "pass"
+    },
+    "logicalPlayTimeP50": {
+      "value": 1212360,
+      "status": "fail"
+    },
+    "logicalPlayTimeP90": {
+      "value": 1217280,
+      "status": "fail"
+    },
+    "weaponArmorCraftRatio": {
+      "value": 0.9718383311603651,
+      "status": "pass"
+    },
+    "steelMithrilCraftAvailability": {
+      "value": {
+        "craftSteel": 0,
+        "craftMithril": 0
+      },
+      "status": "warn"
+    },
+    "enhanceRateDeltaTotal": {
+      "value": 0.0012634386591513502,
+      "status": "pass"
+    },
+    "enhanceRateDelta0to5": {
+      "value": 0.0012634386591513502,
+      "status": "pass"
+    },
+    "enhanceRateDelta6to9": {
+      "value": 0,
+      "status": "pass"
+    },
+    "enhanceRateDelta10plus": {
+      "value": 0,
+      "status": "pass"
+    },
+    "ironEfficiency": {
+      "value": 0.9800136607964838,
+      "status": "warn"
+    },
+    "steelEfficiency": {
+      "value": 0,
+      "status": "pass"
+    },
+    "mithrilEfficiency": {
+      "value": 0,
+      "status": "pass"
+    }
+  },
+  "directionalChecks": {
+    "craftBias": {
+      "value": {
+        "weaponArmorRatio": 0.9718383311603651,
+        "armorLagMaxAvg": 22.033333333333335,
+        "consecutiveWeaponCraftMaxAvg": 5
+      },
+      "status": "pass"
+    },
+    "conversionActivation": {
+      "value": {
+        "craftSteel": 0,
+        "craftMithril": 0,
+        "resourceConversionCount": 0
+      },
+      "status": "fail"
+    },
+    "midTierEntry": {
+      "value": 0,
+      "status": "fail"
+    },
+    "forgeProgress": {
+      "value": 90,
+      "status": "pass"
+    },
+    "tierResourceActivation": {
+      "value": 0,
+      "status": "fail"
+    },
+    "stagnationAbortRate": {
+      "value": 1,
+      "status": "fail"
+    }
+  },
+  "decisionDiagnostics": {
+    "conversionTopReasons": [
+      {
+        "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+        "count": 16490
+      },
+      {
+        "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+        "count": 3212
+      }
+    ],
+    "midTierTopReasons": [
+      {
+        "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+        "count": 11916
+      },
+      {
+        "reasonCode": "ENHANCE_BLOCK_MATERIAL_SHORTAGE",
+        "count": 392
+      }
+    ]
+  },
+  "baselineComparison": {
+    "baselineInput": "D:\\Project\\merginer\\reports\\balance\\verdict.baseline.json",
+    "baselineLoaded": true,
+    "baselinePairMissing": 42580,
+    "baselineStagnationRate": 1
+  },
+  "boundaryProximity": {
+    "clearRateNearPassWarnBoundary": false,
+    "logicalPlayTimeP90NearWarnFailBoundary": false,
+    "weaponArmorRatioDirectionalOnly": false
+  },
+  "secondaryCollectionTrigger": {
+    "shouldRun": false,
+    "reasons": [],
+    "suggestedAdditionalSessionsPerPolicy": 25,
+    "suggestedAdditionalTotalSessions": 75
+  }
+}

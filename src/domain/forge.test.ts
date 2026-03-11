@@ -66,7 +66,7 @@ describe("validateForge", () => {
     const state = {
       ...makeState(),
       forgeLevel: 3,
-      materials: { ironOre: 6, steelOre: 0, mithril: 0 },
+      materials: { ironOre: 6, steelOre: 0, mithril: 1 },
       equipmentItems: [
         { id: "i-1", kind: "weapon" as const, plus: 6 },
         { id: "i-2", kind: "weapon" as const, plus: 6 },
@@ -75,6 +75,22 @@ describe("validateForge", () => {
     expect(validateForge(state, "i-1", "i-2")).toEqual({
       ok: false,
       reason: "INSUFFICIENT_STEEL_ORE",
+    });
+  });
+
+  it("requires mithril for +6 tier", () => {
+    const state = {
+      ...makeState(),
+      forgeLevel: 3,
+      materials: { ironOre: 6, steelOre: 6, mithril: 0 },
+      equipmentItems: [
+        { id: "i-1", kind: "weapon" as const, plus: 6 },
+        { id: "i-2", kind: "weapon" as const, plus: 6 },
+      ],
+    };
+    expect(validateForge(state, "i-1", "i-2")).toEqual({
+      ok: false,
+      reason: "INSUFFICIENT_MITHRIL",
     });
   });
 

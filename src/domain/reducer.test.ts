@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { reducer } from "@/domain/reducer";
 import { createInitialGameState, type GameState } from "@/domain/state";
@@ -9,7 +9,7 @@ describe("reducer", () => {
     state = reducer(state, { type: "CRAFT_WEAPON" });
     state = reducer(state, { type: "CRAFT_ARMOR" });
 
-    expect(state.materials.ironOre).toBe(0);
+    expect(state.materials.ironOre).toBe(4);
     expect(state.equipmentItems.some((item) => item.kind === "weapon")).toBe(true);
     expect(state.equipmentItems.some((item) => item.kind === "armor")).toBe(true);
   });
@@ -163,11 +163,11 @@ describe("reducer", () => {
     expect(state.materials.mithril).toBeGreaterThan(0);
   });
 
-  it("forges +6 and consumes iron+steel", () => {
+  it("forges +6 and consumes iron+steel+mithril", () => {
     const state: GameState = {
       ...createInitialGameState(),
       forgeLevel: 3,
-      materials: { ironOre: 6, steelOre: 6, mithril: 0 },
+      materials: { ironOre: 6, steelOre: 6, mithril: 1 },
       equipmentItems: [
         { id: "i-1", kind: "weapon" as const, plus: 6 },
         { id: "i-2", kind: "weapon" as const, plus: 6 },
@@ -176,7 +176,7 @@ describe("reducer", () => {
     };
 
     const next = reducer(state, { type: "FORGE_ENHANCE", targetItemId: "i-1", materialItemId: "i-2" });
-    expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 0 });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 2, mithril: 0 });
     expect(next.equipmentItems).toEqual([{ id: "i-3", kind: "weapon", plus: 7 }]);
     expect(next.enhanceFailStreak).toBe(0);
   });
@@ -186,7 +186,7 @@ describe("reducer", () => {
       ...createInitialGameState(),
       forgeLevel: 3,
       enhanceFailStreak: 1,
-      materials: { ironOre: 6, steelOre: 6, mithril: 0 },
+      materials: { ironOre: 6, steelOre: 6, mithril: 1 },
       equipmentItems: [
         { id: "i-1", kind: "weapon" as const, plus: 6 },
         { id: "i-2", kind: "weapon" as const, plus: 6 },
@@ -199,7 +199,7 @@ describe("reducer", () => {
       targetItemId: "i-1",
       materialItemId: "i-2",
     });
-    expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 0 });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 2, mithril: 0 });
     expect(next.equipmentItems).toEqual([{ id: "i-1", kind: "weapon", plus: 6 }]);
     expect(next.enhanceFailStreak).toBe(2);
   });
@@ -225,41 +225,81 @@ describe("reducer", () => {
     expect(next.enhanceFailStreak).toBe(0);
   });
 
-  it("upgrades forge with increasing cost and caps at level 10", () => {
+  it("allows enhance when target or material is currently equipped and auto re-equips best item", () => {
+    const state: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 3,
+      materials: { ironOre: 6, steelOre: 6, mithril: 1 },
+      equipmentItems: [
+        { id: "i-1", kind: "weapon" as const, plus: 6 },
+        { id: "i-2", kind: "weapon" as const, plus: 6 },
+      ],
+      equippedWeaponItemId: "i-1",
+      nextItemId: 3,
+    };
+
+    const next = reducer(state, { type: "FORGE_ENHANCE", targetItemId: "i-1", materialItemId: "i-2" });
+    expect(next.equipmentItems).toEqual([{ id: "i-3", kind: "weapon", plus: 7 }]);
+    expect(next.equippedWeaponItemId).toBe("i-3");
+    expect(next.enhanceFailStreak).toBe(0);
+  });
+
+  it("keeps target equipped on fail path while material is destroyed", () => {
+    const state: GameState = {
+      ...createInitialGameState(),
+      forgeLevel: 3,
+      materials: { ironOre: 6, steelOre: 6, mithril: 1 },
+      equipmentItems: [
+        { id: "i-1", kind: "weapon" as const, plus: 6 },
+        { id: "i-2", kind: "weapon" as const, plus: 6 },
+      ],
+      equippedWeaponItemId: "i-1",
+    };
+
+    const next = reducer(state, {
+      type: "FORGE_ENHANCE_FAIL_MATERIAL_DESTROYED",
+      targetItemId: "i-1",
+      materialItemId: "i-2",
+    });
+    expect(next.equipmentItems).toEqual([{ id: "i-1", kind: "weapon", plus: 6 }]);
+    expect(next.equippedWeaponItemId).toBe("i-1");
+  });
+
+  it("upgrades forge with increasing cost and caps at level 12", () => {
     let state: GameState = {
       ...createInitialGameState(),
       materials: { ironOre: 5000, steelOre: 0, mithril: 0 },
-      forgeLevel: 9,
-      forgeUpgradeCost: 3845,
+      forgeLevel: 11,
+      forgeUpgradeCost: 1020,
     };
 
     state = reducer(state, { type: "UPGRADE_FORGE" });
-    expect(state.forgeLevel).toBe(10);
-    expect(state.materials.ironOre).toBe(5000 - 3845);
-    expect(state.forgeUpgradeCost).toBe(3845);
+    expect(state.forgeLevel).toBe(12);
+    expect(state.materials.ironOre).toBe(5000 - 1020);
+    expect(state.forgeUpgradeCost).toBe(1020);
 
     const afterCap = reducer(state, { type: "UPGRADE_FORGE" });
     expect(afterCap).toEqual(state);
   });
 
-  it("crafts steel at forge level 2 with 100 iron ore", () => {
+  it("crafts steel at forge level 2 with 45 iron ore", () => {
     const state: GameState = {
       ...createInitialGameState(),
       forgeLevel: 2,
-      materials: { ironOre: 100, steelOre: 0, mithril: 0 },
+      materials: { ironOre: 45, steelOre: 0, mithril: 0 },
     };
     const next = reducer(state, { type: "CRAFT_STEEL" });
-    expect(next.materials).toEqual({ ironOre: 0, steelOre: 1, mithril: 0 });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 3, mithril: 0 });
   });
 
-  it("crafts mithril at forge level 4 with 100 steel ore", () => {
+  it("crafts mithril at forge level 4 with 50 steel ore", () => {
     const state: GameState = {
       ...createInitialGameState(),
       forgeLevel: 4,
-      materials: { ironOre: 0, steelOre: 100, mithril: 0 },
+      materials: { ironOre: 0, steelOre: 50, mithril: 0 },
     };
     const next = reducer(state, { type: "CRAFT_MITHRIL" });
-    expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 1 });
+    expect(next.materials).toEqual({ ironOre: 0, steelOre: 0, mithril: 2 });
   });
 
   it("does not craft materials when level or input materials are insufficient", () => {
@@ -274,7 +314,7 @@ describe("reducer", () => {
     const lowMaterials: GameState = {
       ...createInitialGameState(),
       forgeLevel: 4,
-      materials: { ironOre: 99, steelOre: 99, mithril: 0 },
+      materials: { ironOre: 44, steelOre: 49, mithril: 0 },
     };
     expect(reducer(lowMaterials, { type: "CRAFT_STEEL" })).toEqual(lowMaterials);
     expect(reducer(lowMaterials, { type: "CRAFT_MITHRIL" })).toEqual(lowMaterials);
@@ -332,3 +372,4 @@ describe("reducer", () => {
     expect(state.currentFloor).toBe(3);
   });
 });
+

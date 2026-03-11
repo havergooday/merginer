@@ -9,9 +9,11 @@
     "lint": "eslint",
     "test": "pnpm run test:fast",
     "test:fast": "vitest run src/domain/forgeEconomy.test.ts src/domain/explore.test.ts src/domain/hp.test.ts src/domain/forge.test.ts src/domain/usecases/itemSelection.test.ts src/lib/storage.test.ts src/domain/reducer.test.ts",
-    "test:analysis": "vitest run src/domain/analysis/floor3ClearAnalysis.test.ts src/domain/analysis/floor3GridSearch.test.ts --testTimeout=30000",
+    "test:analysis": "vitest run src/domain/analysis/floor3ClearAnalysis.test.ts src/domain/analysis/floor3GridSearch.test.ts src/domain/analysis/balanceSessionAgent.test.ts --testTimeout=60000",
     "simulate:plus10": "node scripts/simulate-plus10.mjs",
-    "analyze:floor3": "node scripts/analyze-floor3-clear.mjs"
+    "analyze:floor3": "node scripts/analyze-floor3-clear.mjs",
+    "balance:collect": "node scripts/balance-collect.mjs",
+    "balance:verdict": "node scripts/balance-verdict.mjs"
   },
   "dependencies": {
     "next": "16.1.6",

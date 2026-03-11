@@ -52,6 +52,22 @@ export const getHeaderStatus = (props: ResourcePreviewCardProps): string =>
     props.attack,
   ).padStart(3, "0")}`;
 
+const getEventOverlayLogs = (props: ResourcePreviewCardProps): OverlayLogEntry[] =>
+  props.exploreVisibleEvents.slice(-3).map((event) => ({
+    id: event.id,
+    text: event.text,
+    tone: event.tone,
+    fading: false,
+  }));
+
+const getLegacyOverlayLogs = (props: ResourcePreviewCardProps): OverlayLogEntry[] =>
+  props.exploreSession!.visibleLogs.slice(-3).map((log) => ({
+    id: `explore-${log.stage}`,
+    text: `${props.currentFloor}-${log.stage} 클리어 피해 -${log.damageTaken} 보상 철${log.reward.ironOre}`,
+    tone: "info" as const,
+    fading: false,
+  }));
+
 export const getOverlayLogs = (props: ResourcePreviewCardProps): OverlayLogEntry[] => {
   if (props.location === "village" || props.location === "inn") {
     return [];
@@ -59,34 +75,20 @@ export const getOverlayLogs = (props: ResourcePreviewCardProps): OverlayLogEntry
 
   if (props.location === "explore" && props.isExploring && props.exploreSession) {
     if (props.exploreVisibleEvents.length > 0) {
-      return props.exploreVisibleEvents.slice(-3).map((event) => ({
-        id: event.id,
-        text: event.text,
-        tone: event.tone,
-        fading: false,
-      }));
+      return getEventOverlayLogs(props);
     }
-
-    return props.exploreSession.visibleLogs.slice(-3).map((log) => ({
-      id: `explore-${log.stage}`,
-      text: `${props.currentFloor}-${log.stage} 클리어 피해 -${log.damageTaken} 보상 철${log.reward.ironOre}`,
-      tone: "info" as const,
-      fading: false,
-    }));
+    return getLegacyOverlayLogs(props);
   }
+
   return props.activityLogs;
 };
 
-export const getExploreArtState = (props: ResourcePreviewCardProps): ExploreCinematicArtState | null => {
-  if (props.location !== "explore" || !props.isExploring || !props.exploreSession) {
-    return null;
-  }
-
+const getBaseExploreArtState = (props: ResourcePreviewCardProps): ExploreCinematicArtState => {
   const currentEvent = props.exploreCurrentEvent;
   const stageLabel =
     currentEvent && currentEvent.stage > 0 ? `${currentEvent.floor}-${currentEvent.stage}` : `${props.currentFloor}-1`;
 
-  const state: ExploreCinematicArtState = {
+  return {
     isCinematic: true,
     stageLabel,
     bgKey: `DUNGEON-${props.currentFloor}`,
@@ -98,80 +100,88 @@ export const getExploreArtState = (props: ResourcePreviewCardProps): ExploreCine
     monsterHpCurrent: 0,
     monsterHpMax: 0,
   };
+};
 
+const applyMonsterHpState = (
+  state: ExploreCinematicArtState,
+  props: ResourcePreviewCardProps,
+): ExploreCinematicArtState => {
+  const currentEvent = props.exploreCurrentEvent;
   if (!currentEvent) {
     return state;
   }
 
   const currentStage = currentEvent.stage;
   const stageEvents = props.exploreVisibleEvents.filter((event) => event.stage === currentStage);
-  const allStageEvents =
-    stageEvents.some((event) => event.id === currentEvent.id) ? stageEvents : [...stageEvents, currentEvent];
-  const monsterHpCandidates = allStageEvents
-    .map((event) => event.monsterHpAfter)
-    .filter((hp) => hp > 0);
-  state.monsterHpMax = monsterHpCandidates.length > 0 ? Math.max(...monsterHpCandidates) : 0;
-  state.monsterHpCurrent = Math.max(0, currentEvent.monsterHpAfter);
+  const allStageEvents = stageEvents.some((event) => event.id === currentEvent.id) ? stageEvents : [...stageEvents, currentEvent];
+  const monsterHpCandidates = allStageEvents.map((event) => event.monsterHpAfter).filter((hp) => hp > 0);
+
+  return {
+    ...state,
+    monsterHpMax: monsterHpCandidates.length > 0 ? Math.max(...monsterHpCandidates) : 0,
+    monsterHpCurrent: Math.max(0, currentEvent.monsterHpAfter),
+  };
+};
+
+const applyEventState = (
+  state: ExploreCinematicArtState,
+  props: ResourcePreviewCardProps,
+): ExploreCinematicArtState => {
+  const currentEvent = props.exploreCurrentEvent;
+  if (!currentEvent) {
+    return state;
+  }
 
   if (currentEvent.type === "STAGE_ENTRY") {
-    state.entryMode = "both";
-    state.playerState = "entry";
-    state.monsterState = "entry";
-    return state;
+    return { ...state, entryMode: "both", playerState: "entry", monsterState: "entry" };
   }
 
   if (currentEvent.type === "MONSTER_ENTRY") {
-    state.entryMode = "monster-only";
-    state.playerState = "idle";
-    state.monsterState = "entry";
-    return state;
+    return { ...state, entryMode: "monster-only", playerState: "idle", monsterState: "entry" };
   }
 
-  state.playerState = "idle";
-  state.monsterState = "idle";
+  const base: ExploreCinematicArtState = { ...state, playerState: "idle", monsterState: "idle" };
 
   if (currentEvent.type === "ATTACK_SWING") {
-    if (currentEvent.actor === "player") {
-      state.playerState = "attack";
-    } else if (currentEvent.actor === "monster") {
-      state.monsterState = "attack";
-    }
-    return state;
+    if (currentEvent.actor === "player") return { ...base, playerState: "attack" };
+    if (currentEvent.actor === "monster") return { ...base, monsterState: "attack" };
+    return base;
   }
 
   if (currentEvent.type === "HIT_REACT") {
-    if (currentEvent.target === "player") {
-      state.playerState = "hit";
-    } else if (currentEvent.target === "monster") {
-      state.monsterState = "hit";
-    }
-    return state;
+    if (currentEvent.target === "player") return { ...base, playerState: "hit" };
+    if (currentEvent.target === "monster") return { ...base, monsterState: "hit" };
+    return base;
   }
 
   if (currentEvent.type === "DEATH_FALL") {
-    if (currentEvent.target === "player") {
-      state.playerState = "dead";
-    } else if (currentEvent.target === "monster") {
-      state.monsterState = "dead";
-    }
-    return state;
+    if (currentEvent.target === "player") return { ...base, playerState: "dead" };
+    if (currentEvent.target === "monster") return { ...base, monsterState: "dead" };
+    return base;
   }
 
   if (currentEvent.type === "STAGE_CLEAR") {
-    state.monsterState = "hidden";
-    state.monsterHpCurrent = 0;
-    return state;
+    return { ...base, monsterState: "hidden", monsterHpCurrent: 0 };
   }
 
   if (currentEvent.type === "EXPLORE_END") {
-    if (props.exploreSession.result.endReason === "DEFEATED") {
-      state.playerState = "dead";
-    } else {
-      state.monsterState = "dead";
+    if (props.exploreSession?.result.endReason === "DEFEATED") {
+      return { ...base, playerState: "dead" };
     }
+    return { ...base, monsterState: "dead" };
   }
 
-  return state;
+  return base;
+};
+
+export const getExploreArtState = (props: ResourcePreviewCardProps): ExploreCinematicArtState | null => {
+  if (props.location !== "explore" || !props.isExploring || !props.exploreSession) {
+    return null;
+  }
+
+  const baseState = getBaseExploreArtState(props);
+  const hpApplied = applyMonsterHpState(baseState, props);
+  return applyEventState(hpApplied, props);
 };
 
 export const getBodySlotClassName = (props: ResourcePreviewCardProps): string => {
@@ -190,3 +200,4 @@ export const getIsCommonNavigationLocked = (props: ResourcePreviewCardProps): bo
 
 export const getFrameSrc = (props: ResourcePreviewCardProps): string =>
   props.frameSrc ?? "/assets/ui/frames/card-frame.png";
+

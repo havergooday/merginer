@@ -1,0 +1,487 @@
+{
+  "generatedAt": "2026-03-11T06:32:28.199Z",
+  "input": "D:\\Project\\merginer\\reports\\balance\\summary.csv",
+  "rows": 150,
+  "sampleMode": "phase1_lightweight",
+  "interpretation": "directional",
+  "gateProfile": "goal_15m_v1",
+  "stageGates": {
+    "floor3ReachRate": {
+      "value": 1,
+      "status": "pass",
+      "threshold": "pass >= 0.9, warn >= 0.75"
+    },
+    "floor3ClearRate": {
+      "value": 1,
+      "status": "pass",
+      "threshold": "pass >= 0.5, warn >= 0.3"
+    },
+    "plus8Entry": {
+      "value": 1,
+      "status": "pass",
+      "threshold": "pass >= 0.2, warn >= 0.1"
+    },
+    "ratioSafety": {
+      "value": 1.006679621083313,
+      "status": "pass",
+      "threshold": "0.7 ~ 1.4"
+    },
+    "floor3ClearTimeP50": {
+      "value": 808420,
+      "status": "pass",
+      "threshold": "pass <= 900000ms, warn <= 1200000ms"
+    },
+    "floor3ClearTimeP90": {
+      "value": 998000,
+      "status": "pass",
+      "threshold": "pass <= 1200000ms, warn <= 1500000ms"
+    },
+    "plus6ReachSafety": {
+      "value": 1,
+      "status": "pass",
+      "threshold": ">= 0.9"
+    },
+    "plus8TimeP50": {
+      "value": 746840,
+      "status": "pass",
+      "threshold": "pass <= 1500000ms, warn <= 1800000ms"
+    }
+  },
+  "overallStatus": "pass",
+  "floorStats": {
+    "floor1": {
+      "reachRate": 1,
+      "firstExploreTimeP50": 0,
+      "firstExploreTimeP90": 0,
+      "clearRate": 0,
+      "clearTimeP50": null,
+      "clearTimeP90": null
+    },
+    "floor2": {
+      "reachRate": 1,
+      "firstExploreTimeP50": 64980,
+      "firstExploreTimeP90": 139920,
+      "clearRate": 0.04,
+      "clearTimeP50": 818520,
+      "clearTimeP90": 1058340
+    },
+    "floor3": {
+      "reachRate": 1,
+      "firstExploreTimeP50": 736160,
+      "firstExploreTimeP90": 937300,
+      "clearRate": 1,
+      "clearTimeP50": 808420,
+      "clearTimeP90": 998000
+    }
+  },
+  "clearRateTopReasons": [
+    {
+      "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+      "count": 52919
+    },
+    {
+      "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+      "count": 43792
+    },
+    {
+      "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+      "count": 16207
+    }
+  ],
+  "policyBreakdown": {
+    "aggressive": {
+      "sessionCount": 50,
+      "floorStats": {
+        "floor1": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 0,
+          "firstExploreTimeP90": 0,
+          "clearRate": 0,
+          "clearTimeP50": null,
+          "clearTimeP90": null
+        },
+        "floor2": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 40180,
+          "firstExploreTimeP90": 40180,
+          "clearRate": 0.06,
+          "clearTimeP50": 934480,
+          "clearTimeP90": 1058340
+        },
+        "floor3": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 715560,
+          "firstExploreTimeP90": 1015440,
+          "clearRate": 1,
+          "clearTimeP50": 797640,
+          "clearTimeP90": 1070280
+        }
+      },
+      "weaponArmorRatio": 1.0162470987323693,
+      "enhance6to9": 306,
+      "plus8ReachRate": 1,
+      "plus8TimeP50": 730740,
+      "resourceConversionCount": 300,
+      "pairMissingCount": 14538,
+      "materialShortageCount": 1373,
+      "clearRateTopReasons": [
+        {
+          "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+          "count": 18060
+        },
+        {
+          "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+          "count": 14538
+        },
+        {
+          "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+          "count": 5430
+        }
+      ]
+    },
+    "balanced": {
+      "sessionCount": 50,
+      "floorStats": {
+        "floor1": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 0,
+          "firstExploreTimeP90": 0,
+          "clearRate": 0,
+          "clearTimeP50": null,
+          "clearTimeP90": null
+        },
+        "floor2": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 64980,
+          "firstExploreTimeP90": 64980,
+          "clearRate": 0.02,
+          "clearTimeP50": 818520,
+          "clearTimeP90": 818520
+        },
+        "floor3": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 745280,
+          "firstExploreTimeP90": 937300,
+          "clearRate": 1,
+          "clearTimeP50": 819000,
+          "clearTimeP90": 995880
+        }
+      },
+      "weaponArmorRatio": 0.9748653500897666,
+      "enhance6to9": 308,
+      "plus8ReachRate": 1,
+      "plus8TimeP50": 752360,
+      "resourceConversionCount": 292,
+      "pairMissingCount": 14909,
+      "materialShortageCount": 569,
+      "clearRateTopReasons": [
+        {
+          "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+          "count": 17869
+        },
+        {
+          "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+          "count": 14909
+        },
+        {
+          "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+          "count": 5459
+        }
+      ]
+    },
+    "conservative": {
+      "sessionCount": 50,
+      "floorStats": {
+        "floor1": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 0,
+          "firstExploreTimeP90": 0,
+          "clearRate": 0,
+          "clearTimeP50": null,
+          "clearTimeP90": null
+        },
+        "floor2": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 137000,
+          "firstExploreTimeP90": 171620,
+          "clearRate": 0.04,
+          "clearTimeP50": 773840,
+          "clearTimeP90": 983200
+        },
+        "floor3": {
+          "reachRate": 1,
+          "firstExploreTimeP50": 734500,
+          "firstExploreTimeP90": 912660,
+          "clearRate": 1,
+          "clearTimeP50": 800940,
+          "clearTimeP90": 992880
+        }
+      },
+      "weaponArmorRatio": 1.030016990749481,
+      "enhance6to9": 303,
+      "plus8ReachRate": 1,
+      "plus8TimeP50": 751140,
+      "resourceConversionCount": 308,
+      "pairMissingCount": 14345,
+      "materialShortageCount": 794,
+      "clearRateTopReasons": [
+        {
+          "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+          "count": 16990
+        },
+        {
+          "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+          "count": 14345
+        },
+        {
+          "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+          "count": 5318
+        }
+      ]
+    }
+  },
+  "contentCycleStatus": "fail",
+  "contentCycleChecks": {
+    "midTierEntry": {
+      "value": 917,
+      "status": "pass"
+    },
+    "plus6TimeP50": {
+      "value": 702060,
+      "status": "pass"
+    },
+    "plus6ReachRate": {
+      "value": 1,
+      "status": "pass"
+    },
+    "plus8ReachRate": {
+      "value": 1,
+      "status": "pass"
+    },
+    "plus8TimeP50": {
+      "value": 746840,
+      "status": "pass"
+    },
+    "pairMissingDrop": {
+      "value": -0.028464067637388447,
+      "status": "fail"
+    },
+    "stagnationAbortTrend": {
+      "value": 1,
+      "status": "pass"
+    },
+    "weaponArmorCraftRatio": {
+      "value": 1.006679621083313,
+      "status": "pass"
+    },
+    "conversionActivation": {
+      "value": 900,
+      "status": "pass",
+      "mode": "diagnostic_only"
+    },
+    "clearRateTrend": {
+      "value": 1,
+      "mode": "trend_only"
+    }
+  },
+  "legacyChecks": {
+    "clearRate": {
+      "value": 1,
+      "status": "pass"
+    },
+    "abortedRate": {
+      "value": 0,
+      "status": "pass"
+    },
+    "logicalPlayTimeP50": {
+      "value": 808420,
+      "status": "fail"
+    },
+    "logicalPlayTimeP90": {
+      "value": 998000,
+      "status": "fail"
+    },
+    "weaponArmorCraftRatio": {
+      "value": 1.006679621083313,
+      "status": "pass"
+    },
+    "steelMithrilCraftAvailability": {
+      "value": {
+        "craftSteel": 150,
+        "craftMithril": 750
+      },
+      "status": "pass"
+    },
+    "enhanceRateDeltaTotal": {
+      "value": 0.002279751635667404,
+      "status": "pass"
+    },
+    "enhanceRateDelta0to5": {
+      "value": 0.0008851454891235511,
+      "status": "pass"
+    },
+    "enhanceRateDelta6to9": {
+      "value": 0.05598744138214773,
+      "status": "warn"
+    },
+    "enhanceRateDelta10plus": {
+      "value": 0.003750096200096212,
+      "status": "pass"
+    },
+    "ironEfficiency": {
+      "value": 0.9497302549328694,
+      "status": "pass"
+    },
+    "steelEfficiency": {
+      "value": 0.42344872382699067,
+      "status": "pass"
+    },
+    "mithrilEfficiency": {
+      "value": 0.09884445208127497,
+      "status": "pass"
+    }
+  },
+  "checks": {
+    "clearRate": {
+      "value": 1,
+      "status": "pass"
+    },
+    "abortedRate": {
+      "value": 0,
+      "status": "pass"
+    },
+    "logicalPlayTimeP50": {
+      "value": 808420,
+      "status": "fail"
+    },
+    "logicalPlayTimeP90": {
+      "value": 998000,
+      "status": "fail"
+    },
+    "weaponArmorCraftRatio": {
+      "value": 1.006679621083313,
+      "status": "pass"
+    },
+    "steelMithrilCraftAvailability": {
+      "value": {
+        "craftSteel": 150,
+        "craftMithril": 750
+      },
+      "status": "pass"
+    },
+    "enhanceRateDeltaTotal": {
+      "value": 0.002279751635667404,
+      "status": "pass"
+    },
+    "enhanceRateDelta0to5": {
+      "value": 0.0008851454891235511,
+      "status": "pass"
+    },
+    "enhanceRateDelta6to9": {
+      "value": 0.05598744138214773,
+      "status": "warn"
+    },
+    "enhanceRateDelta10plus": {
+      "value": 0.003750096200096212,
+      "status": "pass"
+    },
+    "ironEfficiency": {
+      "value": 0.9497302549328694,
+      "status": "pass"
+    },
+    "steelEfficiency": {
+      "value": 0.42344872382699067,
+      "status": "pass"
+    },
+    "mithrilEfficiency": {
+      "value": 0.09884445208127497,
+      "status": "pass"
+    }
+  },
+  "directionalChecks": {
+    "craftBias": {
+      "value": {
+        "weaponArmorRatio": 1.006679621083313,
+        "armorLagMaxAvg": 15.14,
+        "consecutiveWeaponCraftMaxAvg": 5
+      },
+      "status": "pass"
+    },
+    "conversionActivation": {
+      "value": {
+        "craftSteel": 150,
+        "craftMithril": 750,
+        "resourceConversionCount": 900
+      },
+      "status": "pass"
+    },
+    "midTierEntry": {
+      "value": 917,
+      "status": "pass"
+    },
+    "forgeProgress": {
+      "value": 478,
+      "status": "pass"
+    },
+    "tierResourceActivation": {
+      "value": 900,
+      "status": "pass"
+    },
+    "stagnationAbortRate": {
+      "value": 0,
+      "status": "pass"
+    }
+  },
+  "decisionDiagnostics": {
+    "conversionTopReasons": [
+      {
+        "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+        "count": 52919
+      },
+      {
+        "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+        "count": 16207
+      },
+      {
+        "reasonCode": "CONV_BLOCK_ORE_SHORTAGE",
+        "count": 10371
+      }
+    ],
+    "midTierTopReasons": [
+      {
+        "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+        "count": 43792
+      },
+      {
+        "reasonCode": "CONV_BLOCK_ORE_SHORTAGE",
+        "count": 10371
+      },
+      {
+        "reasonCode": "ENHANCE_BLOCK_MATERIAL_SHORTAGE",
+        "count": 2736
+      }
+    ],
+    "conversionBlockedDominantReason": {
+      "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+      "count": 52919
+    },
+    "conversionBlockShare": 0.6656729184749111
+  },
+  "baselineComparison": {
+    "baselineInput": "D:\\Project\\merginer\\reports\\balance\\verdict.baseline.json",
+    "baselineLoaded": true,
+    "baselinePairMissing": 42580,
+    "baselineStagnationRate": 1
+  },
+  "boundaryProximity": {
+    "clearRateNearPassWarnBoundary": false,
+    "logicalPlayTimeP90NearWarnFailBoundary": false,
+    "weaponArmorRatioDirectionalOnly": false
+  },
+  "secondaryCollectionTrigger": {
+    "shouldRun": false,
+    "reasons": [],
+    "suggestedAdditionalSessionsPerPolicy": 25,
+    "suggestedAdditionalTotalSessions": 75
+  }
+}

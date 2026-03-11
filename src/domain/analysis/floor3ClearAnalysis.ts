@@ -52,12 +52,12 @@ export const STRATEGY_PRESETS: Record<StrategyPreset, FloorProgressionPolicy> = 
   balanced: {
     name: "balanced",
     floor2: { attack: 3, maxHp: 14 },
-    floor3: { attack: 6, maxHp: 20 },
+    floor3: { attack: 8, maxHp: 24 },
   },
   aggressive: {
     name: "aggressive",
     floor2: { attack: 2, maxHp: 12 },
-    floor3: { attack: 5, maxHp: 16 },
+    floor3: { attack: 8, maxHp: 22 },
   },
 };
 
@@ -147,6 +147,12 @@ const chooseEnhancePair = (state: GameState): { targetItemId: string; materialIt
       continue;
     }
     if (target.plus >= 6 && state.materials.steelOre < required) {
+      continue;
+    }
+    if (target.plus >= 8 && state.materials.mithril < 2) {
+      continue;
+    }
+    if (target.plus >= 6 && target.plus <= 7 && state.materials.mithril < 1) {
       continue;
     }
     if (target.plus >= 10 && state.materials.mithril < required) {

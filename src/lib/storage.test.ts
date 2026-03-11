@@ -16,7 +16,7 @@ describe("storage migrations", () => {
     expect(migrated?.equipmentItems.some((item) => item.kind === "weapon")).toBe(true);
     expect(migrated?.equippedWeaponItemId).not.toBeNull();
     expect(migrated?.forgeLevel).toBe(0);
-    expect(migrated?.forgeUpgradeCost).toBe(100);
+    expect(migrated?.forgeUpgradeCost).toBe(36);
     expect(migrated?.materials.ironOre).toBe(0);
     expect(migrated?.currentFloor).toBe(1);
     expect(migrated?.currentStage).toBe(0);
@@ -53,7 +53,7 @@ describe("storage migrations", () => {
       equippedArmorItemId: null,
       nextItemId: 2,
       forgeLevel: 0,
-      forgeUpgradeCost: 100,
+      forgeUpgradeCost: 60,
       enhanceFailStreak: 0,
       currentFloor: 1,
       currentStage: 0,

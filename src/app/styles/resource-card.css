@@ -1,0 +1,278 @@
+﻿.resource-village-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  column-gap: 4.2em;
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  align-items: stretch;
+}
+
+.resource-village-body {
+  --village-pad-y: 0.92rem;
+  display: grid;
+  grid-template-rows: 1fr;
+  min-height: 100%;
+  height: 100%;
+  position: relative;
+  padding: var(--village-pad-y) 2.1em var(--village-pad-y) 4.2em;
+  box-sizing: border-box;
+}
+
+.resource-card-body-slot > .resource-village-body {
+  align-self: stretch;
+}
+
+.resource-village-character-box {
+  border: 1px solid #4a4a4a;
+  background: #0a0a0a;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.resource-village-equip-stack {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 1.05rem;
+  min-height: 100%;
+  height: 100%;
+}
+
+.resource-village-character-label {
+  color: rgb(221, 210, 192);
+  font-size: 0.76rem;
+  letter-spacing: 0.03em;
+}
+
+.resource-village-character-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.resource-village-equip-slot {
+  border: 1px solid #3e3e3e;
+  background: #0b0b0b;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  gap: 0.18rem;
+  padding: 0.3rem;
+  text-align: center;
+}
+
+.resource-village-equip-slot.is-pending-unequip {
+  border-color: #6e5d2b;
+  background: linear-gradient(180deg, rgba(70, 58, 20, 0.78) 0%, rgba(40, 30, 10, 0.72) 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 217, 102, 0.32);
+}
+
+.resource-village-slot-label {
+  color: rgb(221, 210, 192);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.resource-village-slot-plus {
+  color: rgb(221, 210, 192);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.resource-village-equip-slot:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.resource-inn-body {
+  min-height: 100%;
+  height: 100%;
+  padding: 0.92rem 2.1em 0.92rem 4.2em;
+  box-sizing: border-box;
+}
+
+.resource-inn-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+  column-gap: 4.2em;
+  min-height: 100%;
+  height: 100%;
+  align-items: stretch;
+}
+
+.resource-inn-action-stack {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 1.05rem;
+  min-height: 100%;
+  height: 100%;
+}
+
+.resource-inn-action-btn {
+  min-height: 0;
+  height: 100%;
+}
+
+.resource-inn-rest-btn,
+.resource-inn-upgrade-btn {
+  --inn-rest-btn-src: url("/assets/ui/buttons/normal_btn.png");
+  border: 0;
+  background-image: var(--inn-rest-btn-src) !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-inn-rest-btn:disabled,
+.resource-inn-upgrade-btn:disabled {
+  filter: grayscale(0.9) brightness(0.72);
+}
+
+.resource-inn-npc-box {
+  border: 1px solid #245b24;
+  background: #040b04;
+  min-height: 0;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.resource-inn-npc-label {
+  color: rgb(221, 210, 192);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+}
+
+.resource-inn-npc-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.resource-card-utility-slot {
+  --nav-btn-active-src: url("/assets/ui/buttons/nav-active.png");
+  --nav-btn-inactive-src: url("/assets/ui/buttons/nav-inactive.png");
+  display: flex;
+  justify-content: stretch;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.28rem;
+  width: 100%;
+  min-height: 2.92rem;
+}
+.resource-card-utility-btn {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.34rem 0.4rem;
+  min-height: 2.24rem;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
+  transform: translateY(-6px);
+  isolation: isolate;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-card-utility-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--nav-btn-inactive-src);
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+.resource-card-utility-btn.is-current::before {
+  background-image: var(--nav-btn-active-src);
+}
+
+.resource-card-utility-btn.is-locked {
+  cursor: not-allowed;
+}
+
+.resource-card-utility-btn.is-locked:disabled {
+  opacity: 0.9;
+  filter: grayscale(1) brightness(0.72);
+}
+
+@media (max-width: 640px) {
+  .kv-row {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+
+  .resource-card-art-slot {
+    min-height: 0;
+  }
+
+  .resource-craft-bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  .resource-craft-upgrade-btn {
+    min-height: 1.7rem;
+    height: auto;
+  }
+
+  .resource-craft-top-row .resource-card-action-btn {
+    min-height: 2.2rem;
+    height: auto;
+  }
+}
+.resource-ui-layout {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(460px, 560px);
+  justify-content: center;
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.resource-card-body-slot {
+  align-content: start;
+}
+
+.resource-card-note {
+  color: var(--ui-text-dim);
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.resource-card-warning {
+  color: var(--ui-warn);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.resource-card-action-btn {
+  border: 0;
+  background: transparent;
+  color: rgb(221, 210, 192);
+  font-size: 0.8rem;
+  padding: 0.24rem 0.38rem;
+  min-height: 1.7rem;
+  text-align: center;
+}
+
+

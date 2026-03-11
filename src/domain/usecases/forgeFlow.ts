@@ -1,7 +1,8 @@
 import { validateForge } from "@/domain/forge";
 import {
   canUpgradeForge,
-  getCraftCost,
+  getCraftFinalCost,
+  getCraftedPlusByForgeLevel,
   getEnhanceMaterialCost,
   getNextForgeUpgradeCost,
 } from "@/domain/forgeEconomy";
@@ -12,6 +13,20 @@ const createEquipmentItem = (idNum: number, kind: EquipmentKind, plus: number): 
   id: `i-${idNum}`,
   kind,
   plus,
+});
+
+const getBestItemIdByKind = (items: EquipmentItem[], kind: EquipmentKind): string | null => {
+  const target = items
+    .filter((item) => item.kind === kind)
+    .sort((a, b) => b.plus - a.plus || a.id.localeCompare(b.id))[0];
+  return target ? target.id : null;
+};
+
+const withBestEquipped = (state: GameState, equipmentItems: EquipmentItem[]): GameState => ({
+  ...state,
+  equipmentItems,
+  equippedWeaponItemId: getBestItemIdByKind(equipmentItems, "weapon"),
+  equippedArmorItemId: getBestItemIdByKind(equipmentItems, "armor"),
 });
 
 export const getEquippedWeaponPlus = (state: GameState): number => {
@@ -29,13 +44,17 @@ export const getPlayerAttack = (state: GameState): number => {
 };
 
 export const craftEquipment = (state: GameState, kind: EquipmentKind): GameState => {
-  const craftCost = getCraftCost(state.forgeLevel);
+  const craftCost = getCraftFinalCost(state.forgeLevel);
   if (state.materials.ironOre < craftCost) {
     return state;
   }
 
-  const crafted = createEquipmentItem(state.nextItemId, kind, 0);
-  const equipmentItems = [...state.equipmentItems, crafted];
+  const craftedPlus = getCraftedPlusByForgeLevel(state.forgeLevel);
+  const craftCount = state.forgeLevel >= 8 ? 2 : 1;
+  const craftedItems = Array.from({ length: craftCount }, (_, index) =>
+    createEquipmentItem(state.nextItemId + index, kind, craftedPlus),
+  );
+  const equipmentItems = [...state.equipmentItems, ...craftedItems];
   return {
     ...state,
     materials: {
@@ -44,7 +63,7 @@ export const craftEquipment = (state: GameState, kind: EquipmentKind): GameState
     },
     equipmentItems,
     bestPlus: calcBestPlus(equipmentItems),
-    nextItemId: state.nextItemId + 1,
+    nextItemId: state.nextItemId + craftCount,
   };
 };
 
@@ -63,13 +82,12 @@ export const enhanceEquipment = (state: GameState, targetItemId: string, materia
   const equipmentItems = [...remainingItems, enhancedItem];
 
   return {
-    ...state,
+    ...withBestEquipped(state, equipmentItems),
     materials: {
       ironOre: state.materials.ironOre - (requiredMaterials.ironOre ?? 0),
       steelOre: state.materials.steelOre - (requiredMaterials.steelOre ?? 0),
       mithril: state.materials.mithril - (requiredMaterials.mithril ?? 0),
     },
-    equipmentItems,
     bestPlus: calcBestPlus(equipmentItems),
     nextItemId: state.nextItemId + 1,
   };
@@ -90,13 +108,12 @@ export const failEnhanceMaterialDestroyed = (
   const equipmentItems = state.equipmentItems.filter((item) => item.id !== material.id);
 
   return {
-    ...state,
+    ...withBestEquipped(state, equipmentItems),
     materials: {
       ironOre: state.materials.ironOre - (requiredMaterials.ironOre ?? 0),
       steelOre: state.materials.steelOre - (requiredMaterials.steelOre ?? 0),
       mithril: state.materials.mithril - (requiredMaterials.mithril ?? 0),
     },
-    equipmentItems,
     bestPlus: calcBestPlus(equipmentItems),
   };
 };

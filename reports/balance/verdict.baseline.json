@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-03-09T17:39:32.630Z",
+  "input": "D:\\Project\\merginer\\reports\\balance\\summary.csv",
+  "rows": 150,
+  "sampleMode": "phase1_lightweight",
+  "interpretation": "directional",
+  "overallStatus": "fail",
+  "checks": {
+    "clearRate": {
+      "value": 0,
+      "status": "fail"
+    },
+    "abortedRate": {
+      "value": 0,
+      "status": "pass"
+    },
+    "logicalPlayTimeP50": {
+      "value": 1207580,
+      "status": "fail"
+    },
+    "logicalPlayTimeP90": {
+      "value": 1213780,
+      "status": "fail"
+    },
+    "weaponArmorCraftRatio": {
+      "value": 1.084028692724345,
+      "status": "pass"
+    },
+    "steelMithrilCraftAvailability": {
+      "value": {
+        "craftSteel": 0,
+        "craftMithril": 0
+      },
+      "status": "warn"
+    },
+    "enhanceRateDeltaTotal": {
+      "value": 0.0019550070839958744,
+      "status": "pass"
+    },
+    "enhanceRateDelta0to5": {
+      "value": 0.0019550070839958744,
+      "status": "pass"
+    },
+    "enhanceRateDelta6to9": {
+      "value": 0,
+      "status": "pass"
+    },
+    "enhanceRateDelta10plus": {
+      "value": 0,
+      "status": "pass"
+    },
+    "ironEfficiency": {
+      "value": 0.9810362736393758,
+      "status": "warn"
+    },
+    "steelEfficiency": {
+      "value": 0,
+      "status": "pass"
+    },
+    "mithrilEfficiency": {
+      "value": "N/A",
+      "status": "na"
+    }
+  },
+  "directionalChecks": {
+    "craftBias": {
+      "value": {
+        "weaponArmorRatio": 1.084028692724345,
+        "armorLagMaxAvg": 5.78,
+        "consecutiveWeaponCraftMaxAvg": 4.98
+      },
+      "status": "pass"
+    },
+    "conversionActivation": {
+      "value": {
+        "craftSteel": 0,
+        "craftMithril": 0,
+        "resourceConversionCount": 0
+      },
+      "status": "fail"
+    },
+    "midTierEntry": {
+      "value": 0,
+      "status": "fail"
+    },
+    "forgeProgress": {
+      "value": 450,
+      "status": "pass"
+    },
+    "tierResourceActivation": {
+      "value": 0,
+      "status": "fail"
+    },
+    "stagnationAbortRate": {
+      "value": 1,
+      "status": "fail"
+    }
+  },
+  "decisionDiagnostics": {
+    "conversionTopReasons": [
+      {
+        "reasonCode": "CONV_BLOCK_TARGET_ALREADY_MET",
+        "count": 34064
+      },
+      {
+        "reasonCode": "CONV_BLOCK_TARGET_NOT_ACTIVE",
+        "count": 23174
+      }
+    ],
+    "midTierTopReasons": [
+      {
+        "reasonCode": "ENHANCE_BLOCK_PAIR_NOT_FOUND",
+        "count": 42580
+      },
+      {
+        "reasonCode": "ENHANCE_BLOCK_MATERIAL_SHORTAGE",
+        "count": 1268
+      }
+    ]
+  },
+  "boundaryProximity": {
+    "clearRateNearPassWarnBoundary": false,
+    "logicalPlayTimeP90NearWarnFailBoundary": false,
+    "weaponArmorRatioDirectionalOnly": false
+  },
+  "secondaryCollectionTrigger": {
+    "shouldRun": false,
+    "reasons": [],
+    "suggestedAdditionalSessionsPerPolicy": 25,
+    "suggestedAdditionalTotalSessions": 75
+  }
+}

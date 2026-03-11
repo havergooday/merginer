@@ -1,0 +1,258 @@
+﻿/* Body single-background override (village/inn/forge/explore) */
+.resource-card-body-slot {
+  border: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.3) 100%),
+    url("/assets/ui/backgrounds/body-bg.png") center / cover no-repeat !important;
+}
+
+.resource-card-body-slot.is-village,
+.resource-card-body-slot.is-inn,
+.resource-card-body-slot.is-forge,
+.resource-card-body-slot.is-explore {
+  border: 0 !important;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.24) 0%, rgba(0, 0, 0, 0.3) 100%),
+    url("/assets/ui/backgrounds/body-bg.png") center / cover no-repeat !important;
+}
+
+.resource-card-body-slot .resource-card-stat-row,
+.resource-card-body-slot .resource-card-equip-row,
+.resource-card-body-slot .resource-village-character-box,
+.resource-card-body-slot .resource-village-equip-slot,
+.resource-card-body-slot .resource-inn-npc-box,
+.resource-card-body-slot .resource-enhance-slot-box,
+.resource-card-body-slot .resource-combine-list-shell,
+.resource-card-body-slot .resource-explore-floor-list-shell,
+.resource-card-body-slot .resource-explore-floor-banner,
+.resource-card-body-slot .resource-explore-result-box {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.resource-card-body-slot .resource-village-equip-slot.is-pending-unequip {
+  border: 0 !important;
+  background: rgba(255, 217, 102, 0.14) !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 217, 102, 0.38) !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner.is-selected {
+  border: 0 !important;
+  box-shadow:
+    inset 0 0 0 1px rgb(221, 210, 192),
+    0 0 8px rgba(221, 210, 192, 0.28) !important;
+  background: transparent !important;
+  filter: brightness(1.14) !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner.is-blocked {
+  border: 0 !important;
+  background: rgba(32, 32, 32, 0.28) !important;
+}
+
+/* Explore floor cards skin override */
+.resource-card-body-slot .resource-explore-floor-list-shell {
+  border: 0 !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner {
+  border: 0 !important;
+  background-image: url("/assets/ui/backgrounds/node_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.resource-card-body-slot .resource-explore-floor-banner.is-selected {
+  box-shadow:
+    inset 0 0 0 1px rgb(221, 210, 192),
+    0 0 8px rgba(221, 210, 192, 0.28) !important;
+  filter: brightness(1.14) !important;
+}
+
+/* Body background visibility override */
+.resource-card-body-slot,
+.resource-card-body-slot.is-village,
+.resource-card-body-slot.is-inn,
+.resource-card-body-slot.is-forge,
+.resource-card-body-slot.is-explore {
+  background-image: url("/assets/ui/backgrounds/body-bg.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+}
+
+.resource-card-body-slot .resource-forge-tab,
+.resource-card-body-slot .resource-card-stat-row,
+.resource-card-body-slot .resource-card-equip-row,
+.resource-card-body-slot .resource-village-character-box,
+.resource-card-body-slot .resource-village-equip-slot,
+.resource-card-body-slot .resource-inn-npc-box,
+.resource-card-body-slot .resource-enhance-slot-box,
+.resource-card-body-slot .resource-combine-list-shell,
+.resource-card-body-slot .resource-explore-floor-list-shell,
+.resource-card-body-slot .resource-explore-floor-banner,
+.resource-card-body-slot .resource-explore-result-box {
+  background-color: transparent !important;
+}
+
+/* Village equipment slot frame skin (darkened) */
+.resource-card-body-slot .resource-village-equip-slot {
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.44) 0%, rgba(0, 0, 0, 0.5) 100%),
+    url("/assets/ui/frames/equip_bg.png") !important;
+  background-size: 100% 100%, 100% 100% !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-color: transparent !important;
+}
+
+.resource-card-body-slot .resource-village-equip-slot.is-pending-unequip {
+  background-image:
+    linear-gradient(180deg, rgba(218, 224, 230, 0.22) 0%, rgba(118, 124, 132, 0.28) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.36) 0%, rgba(0, 0, 0, 0.44) 100%),
+    url("/assets/ui/frames/equip_bg.png") !important;
+  background-size: 100% 100%, 100% 100%, 100% 100% !important;
+  background-position: center, center, center !important;
+  background-repeat: no-repeat, no-repeat, no-repeat !important;
+}
+
+/* Forge skin overrides */
+.resource-forge-tab {
+  position: relative;
+  overflow: hidden;
+  border: 0 !important;
+  background: transparent !important;
+  color: rgb(221, 210, 192) !important;
+  isolation: isolate;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-forge-tab::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/ui/buttons/nav-inactive.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+.resource-forge-tab.is-active {
+  box-shadow: none !important;
+}
+
+.resource-forge-tab.is-active::before {
+  background-image: url("/assets/ui/buttons/nav-active.png");
+}
+
+.resource-craft-top-row .resource-card-action-btn {
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/craft_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-craft-upgrade-btn {
+  border: 0 !important;
+  background-image: url("/assets/ui/buttons/normal_btn.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  color: rgb(221, 210, 192) !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.9);
+}
+
+.resource-craft-preview-box {
+  border: 0 !important;
+  background-image: url("/assets/ui/backgrounds/metal_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* Ensure forge cost panel image stays visible over transparent overrides */
+.resource-card-body-slot .resource-craft-preview-box {
+  background-image: url("/assets/ui/backgrounds/metal_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(8, 8, 8, 0.34) !important;
+  box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.2) !important;
+}
+
+/* Ensure explore result panel image stays visible over transparent overrides */
+.resource-card-body-slot .resource-explore-result-box {
+  background-image: url("/assets/ui/backgrounds/metal_panel.png") !important;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-color: rgba(8, 8, 8, 0.34) !important;
+}
+
+/* Forge enhance slots: equip background skin */
+.resource-card-body-slot .resource-enhance-slot-box {
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.18) 100%),
+    url("/assets/ui/frames/equip_bg.png") !important;
+  background-size: 100% 100%, 100% 100% !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-color: transparent !important;
+  box-shadow: inset 0 0 0 1px rgba(221, 210, 192, 0.16) !important;
+}
+
+/* Body blur tone (about 1/3 softer) */
+.resource-card-body-slot,
+.resource-card-body-slot.is-village,
+.resource-card-body-slot.is-inn,
+.resource-card-body-slot.is-forge,
+.resource-card-body-slot.is-explore {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: none !important;
+}
+
+.resource-card-body-slot::before,
+.resource-card-body-slot.is-village::before,
+.resource-card-body-slot.is-inn::before,
+.resource-card-body-slot.is-forge::before,
+.resource-card-body-slot.is-explore::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/assets/ui/backgrounds/body-bg.png");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(0.92);
+  opacity: 0.2;
+  transform: scale(1.02);
+  transform-origin: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.resource-card-body-slot > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Art/log border hard override */
+.resource-card-art-slot {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.resource-art-log-overlay {
+  border: 0 !important;
+}
+
+

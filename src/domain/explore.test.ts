@@ -8,7 +8,7 @@ describe("simulateExplore", () => {
     expect(result.endReason).toBe("FLOOR_CLEARED");
     expect(result.clearedStage).toBe(10);
     expect(result.logs.length).toBe(10);
-    expect(result.totalReward).toEqual({ ironOre: 23, steelOre: 0, mithril: 0 });
+    expect(result.totalReward).toEqual({ ironOre: 33, steelOre: 0, mithril: 0 });
     expect(result.finalHp).toBeGreaterThan(0);
   });
 

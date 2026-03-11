@@ -1,4 +1,4 @@
-﻿import { getMaxHp } from "@/domain/hp";
+import { getMaxHp } from "@/domain/hp";
 import {
   ORE_TO_STEEL_COST,
   STEEL_TO_MITHRIL_COST,
@@ -90,7 +90,7 @@ export const reducer = (state: GameState, action: Action): GameState => {
         materials: {
           ...state.materials,
           ironOre: state.materials.ironOre - ORE_TO_STEEL_COST,
-          steelOre: state.materials.steelOre + 1,
+          steelOre: state.materials.steelOre + 3,
         },
       };
     }
@@ -103,7 +103,7 @@ export const reducer = (state: GameState, action: Action): GameState => {
         materials: {
           ...state.materials,
           steelOre: state.materials.steelOre - STEEL_TO_MITHRIL_COST,
-          mithril: state.materials.mithril + 1,
+          mithril: state.materials.mithril + 2,
         },
       };
     }
@@ -161,3 +161,4 @@ export const reducer = (state: GameState, action: Action): GameState => {
       return state;
   }
 };
+

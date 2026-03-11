@@ -4,7 +4,7 @@ import type { Dispatch } from "react";
 import type { Action } from "@/domain/reducer";
 
 const REST_UNTIL_KEY = "reinforce-rest-until";
-const REST_DELAY_MS = 3000;
+const REST_DELAY_MS = 1000;
 
 export const formatAsMmSs = (seconds: number): string => {
   const safe = Math.max(0, seconds);

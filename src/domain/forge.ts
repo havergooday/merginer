@@ -8,7 +8,6 @@ export type ForgeFailureReason =
   | "MISSING_SELECTION"
   | "SAME_ITEM"
   | "ITEM_NOT_FOUND"
-  | "EQUIPPED_ITEM"
   | "KIND_MISMATCH"
   | "PLUS_MISMATCH"
   | "FORGE_LEVEL_TOO_LOW_FOR_STEEL"
@@ -49,15 +48,6 @@ export const validateForge = (
   const material = state.equipmentItems.find((item) => item.id === materialItemId);
   if (!target || !material) {
     return { ok: false, reason: "ITEM_NOT_FOUND" };
-  }
-
-  if (
-    state.equippedWeaponItemId === targetItemId ||
-    state.equippedWeaponItemId === materialItemId ||
-    state.equippedArmorItemId === targetItemId ||
-    state.equippedArmorItemId === materialItemId
-  ) {
-    return { ok: false, reason: "EQUIPPED_ITEM" };
   }
 
   if (target.kind !== material.kind) {

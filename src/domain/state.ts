@@ -53,7 +53,7 @@ export const createInitialGameState = (seed: number = INITIAL_SEED): GameState =
   equippedArmorItemId: null,
   nextItemId: 2,
   forgeLevel: 0,
-  forgeUpgradeCost: 100,
+  forgeUpgradeCost: 50,
   unlockedFloor: 1,
   currentFloor: 1,
   currentStage: 0,

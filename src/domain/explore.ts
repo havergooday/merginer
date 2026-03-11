@@ -47,27 +47,41 @@ export const getMonsterStats = (floor: Floor, stage: number): { hp: number; atta
   if (tier === 1) return { hp: 13, attack: 3 };
   if (tier === 2) return { hp: 15, attack: 4 };
   if (tier === 3) return { hp: 17, attack: 5 };
-  return { hp: 32, attack: 8 };
+  return { hp: 32, attack: 6 };
 };
 
 export const getStageReward = (floor: Floor, stage: number): MaterialStock => {
   const tier = getStageTier(stage);
+  const withIronBoost = (reward: MaterialStock): MaterialStock => ({
+    ...reward,
+    ironOre: Math.ceil(reward.ironOre * 1.1),
+  });
+  const withFloor2MidBoost = (reward: MaterialStock): MaterialStock => ({
+    ...reward,
+    ironOre: Math.ceil(reward.ironOre * 1.2),
+    steelOre: Math.ceil(reward.steelOre * 1.2),
+  });
+  const withHighTierBoost = (reward: MaterialStock): MaterialStock => ({
+    ironOre: Math.ceil(reward.ironOre * 1.6),
+    steelOre: Math.ceil(reward.steelOre * 1.6),
+    mithril: Math.ceil(reward.mithril * 1.6),
+  });
   if (floor === 1) {
-    if (tier === 1) return { ironOre: 1, steelOre: 0, mithril: 0 };
-    if (tier === 2) return { ironOre: 2, steelOre: 0, mithril: 0 };
-    if (tier === 3) return { ironOre: 3, steelOre: 0, mithril: 0 };
-    return { ironOre: 5, steelOre: 0, mithril: 0 };
+    if (tier === 1) return withIronBoost({ ironOre: 1, steelOre: 0, mithril: 0 });
+    if (tier === 2) return withIronBoost({ ironOre: 2, steelOre: 0, mithril: 0 });
+    if (tier === 3) return withIronBoost({ ironOre: 3, steelOre: 0, mithril: 0 });
+    return withIronBoost({ ironOre: 5, steelOre: 0, mithril: 0 });
   }
   if (floor === 2) {
-    if (tier === 1) return { ironOre: 2, steelOre: 1, mithril: 0 };
-    if (tier === 2) return { ironOre: 3, steelOre: 1, mithril: 0 };
-    if (tier === 3) return { ironOre: 4, steelOre: 2, mithril: 0 };
-    return { ironOre: 6, steelOre: 3, mithril: 0 };
+    if (tier === 1) return withIronBoost({ ironOre: 3, steelOre: 1, mithril: 0 });
+    if (tier === 2) return withFloor2MidBoost(withIronBoost({ ironOre: 4, steelOre: 1, mithril: 0 }));
+    if (tier === 3) return withFloor2MidBoost(withIronBoost({ ironOre: 5, steelOre: 2, mithril: 0 }));
+    return withHighTierBoost(withIronBoost({ ironOre: 6, steelOre: 2, mithril: 0 }));
   }
-  if (tier === 1) return { ironOre: 3, steelOre: 2, mithril: 1 };
-  if (tier === 2) return { ironOre: 4, steelOre: 3, mithril: 1 };
-  if (tier === 3) return { ironOre: 5, steelOre: 4, mithril: 2 };
-  return { ironOre: 8, steelOre: 5, mithril: 3 };
+  if (tier === 1) return withHighTierBoost(withIronBoost({ ironOre: 3, steelOre: 2, mithril: 2 }));
+  if (tier === 2) return withHighTierBoost(withIronBoost({ ironOre: 4, steelOre: 3, mithril: 2 }));
+  if (tier === 3) return withHighTierBoost(withIronBoost({ ironOre: 5, steelOre: 4, mithril: 3 }));
+  return withHighTierBoost(withIronBoost({ ironOre: 8, steelOre: 5, mithril: 4 }));
 };
 
 type SimulateExploreInput = {
